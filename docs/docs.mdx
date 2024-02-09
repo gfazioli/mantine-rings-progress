@@ -1,0 +1,35 @@
+import { InstallScript } from './components/InstallScript/InstallScript';
+import * as demos from './demos';
+
+## Installation
+
+<InstallScript packages="@gfazioli/mantine-rings-progress" />
+
+## Usage
+
+<Demo data={demos.configurator} />
+
+> **Mantine RingProgress**
+>
+> We're usign a custom version of the `RingProgress` component from the `mantine` library to render the rings.
+
+The `label` prop can be a string or a component. Try to change the label on the above configurator. You may use also an emoji 😊 or a custom component.
+
+## Label
+
+<Demo data={demos.label} />
+
+
+
+The `label` prop can be a string or a component. 
+
+<Demo data={demos.labels} />
+
+## Tooltips
+
+Despite the `RingProgress` component from the `mantine` library has a `tooltip` prop, we discourage its use. The tooltip will be rendered on the top of the rings and it will be hard to read the label.
+
+<Demo data={demos.tooltips} />
+
+
+
