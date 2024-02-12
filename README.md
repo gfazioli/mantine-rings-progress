@@ -1,7 +1,8 @@
 # Mantine Rings Progress Component
 
 <p align="center">
-  <img alt="" src="https://github.com/gfazioli/mantine-rings-progress/assets/432181/cf1917a3-e7eb-4ecb-a525-85ff933c601d">
+  <img alt="" src="https://github.com/gfazioli/mantine-rings-progress/assets/432181/d3752711-6bae-43bc-9f8c-8e5c7bfc21ba">
+
 </p>
 
 ---
