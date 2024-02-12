@@ -22,8 +22,7 @@
 ## Overview
 
 This component is created on top of the [Mantine](https://mantine.dev/) library.
-It allows for easy management of two separate views, such as in the cases of a registration form and a login form.
-Essentially, when switching between views, the component will handle the flip animation.
+Display progress with animated rings like the Apple Watch activity app.
 
 ## Installation
 
@@ -60,9 +59,6 @@ function Demo() {
   );
 }
 ```
-
-As you can see, the `Flip` component wraps two children, which are the two views that you want to flip between.
-The `Flip.Target` component is used to define the trigger for the flip animation. It can be any component, such as a button, or a link, or even a div.
 
 ## Props
 
