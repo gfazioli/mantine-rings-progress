@@ -35,6 +35,11 @@ or
 ```sh
 yarn add @gfazioli/mantine-rings-progress
 ```
+After installation import package styles at the root of your application:
+
+```tsx
+import '@gfazioli/mantine-rings-progress/styles.css';
+```
 
 ## Usage
 
