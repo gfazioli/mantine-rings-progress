@@ -9,6 +9,7 @@ import '@mantinex/shiki/styles.css';
 import { AppProps } from 'next/app';
 import Head from 'next/head';
 import favicon from '../assets/favicon.svg';
+import { Footer } from '../components/Footer';
 import { theme } from '../theme';
 
 async function loadShiki() {
@@ -34,6 +35,7 @@ export default function App({ Component, pageProps }: AppProps) {
       <ShikiProvider loadShiki={loadShiki}>
         <Component {...pageProps} />
       </ShikiProvider>
+      <Footer />
     </MantineProvider>
   );
 }
