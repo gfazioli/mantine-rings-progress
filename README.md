@@ -24,6 +24,7 @@
 
 This component is created on top of the [Mantine](https://mantine.dev/) library.
 Display progress with animated rings like the Apple Watch activity app.
+You can find more components on the [Mantine Extensions Hub](https://mantine-extensions.vercel.app/) library.
 
 ## Installation
 
