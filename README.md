@@ -7,18 +7,13 @@
 
 ---
 
-<p align="center">
-  <a aria-label="NPM version" href="https://www.npmjs.com/package/@gfazioli/mantine-rings-progress">
-    <img alt="NPM version" src="https://img.shields.io/npm/v/%40gfazioli%2Fmantine-rings-progress?style=for-the-badge">
-  </a>
+<div align="center">
   
-  <a aria-label="NPM version" href="https://www.npmjs.com/package/@gfazioli/mantine-rings-progress">
-    <img alt="NPM Downloads" src="https://img.shields.io/npm/dm/%40gfazioli%2Fmantine-rings-progress?style=for-the-badge">
-  </a>
+  [![NPM version](https://img.shields.io/npm/v/%40gfazioli%2Fmantine-rings-progress?style=for-the-badge)](https://www.npmjs.com/package/@gfazioli/mantine-rings-progress)
+  [![NPM Downloads](https://img.shields.io/npm/dm/%40gfazioli%2Fmantine-rings-progress?style=for-the-badge)](https://www.npmjs.com/package/@gfazioli/mantine-rings-progress)
+  ![NPM License](https://img.shields.io/npm/l/%40gfazioli%2Fmantine-rings-progress?style=for-the-badge)
 
-  <img alt="NPM License" src="https://img.shields.io/npm/l/%40gfazioli%2Fmantine-rings-progress?style=for-the-badge">
-
-</p>
+</div>
 
 ## Overview
 
