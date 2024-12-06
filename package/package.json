@@ -1,6 +1,6 @@
 {
   "name": "@gfazioli/mantine-rings-progress",
-  "version": "0.1.10",
+  "version": "0.1.11",
   "description": "Rings Progress component for Mantine",
   "homepage": "https://gfazioli.github.io/mantine-rings-progress/",
   "packageManager": "yarn@4.0.1",
