@@ -1,11 +1,22 @@
 {
-  "name": "@gfazioli/mantine-rings-progress",
-  "version": "1.0.1",
-  "description": "Rings Progress component for Mantine",
-  "homepage": "https://gfazioli.github.io/mantine-rings-progress/",
-  "packageManager": "yarn@4.0.1",
-  "license": "MIT",
   "author": "Giovambattista Fazioli <giovambattista.fazioli@gmail.com>",
+  "bugs": "https://github.com/gfazioli/mantine-rings-progress/issues",
+  "description": "Rings Progress component for Mantine",
+  "exports": {
+    ".": {
+      "import": {
+        "default": "./dist/esm/index.mjs",
+        "types": "./dist/types/index.d.mts"
+      },
+      "require": {
+        "default": "./dist/cjs/index.cjs",
+        "types": "./dist/types/index.d.ts"
+      }
+    },
+    "./styles.css": "./dist/styles.css",
+    "./styles.layer.css": "./dist/styles.layer.css"
+  },
+  "homepage": "https://gfazioli.github.io/mantine-rings-progress/",
   "keywords": [
     "extension",
     "mantine",
@@ -17,35 +28,18 @@
     "rings",
     "ringsprogress"
   ],
+  "license": "MIT",
   "main": "./dist/cjs/index.cjs",
   "module": "./dist/esm/index.mjs",
-  "types": "./dist/types/index.d.ts",
-  "exports": {
-    ".": {
-      "import": {
-        "types": "./dist/types/index.d.mts",
-        "default": "./dist/esm/index.mjs"
-      },
-      "require": {
-        "types": "./dist/types/index.d.ts",
-        "default": "./dist/cjs/index.cjs"
-      }
-    },
-    "./styles.css": "./dist/styles.css",
-    "./styles.layer.css": "./dist/styles.layer.css"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/gfazioli/mantine-rings-progress.git"
-  },
-  "workspaces": [
-    "docs"
-  ],
+  "name": "@gfazioli/mantine-rings-progress",
+  "packageManager": "yarn@4.0.1",
   "peerDependencies": {
     "@mantine/core": ">=7.0.0",
     "@mantine/hooks": ">=7.0.0",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react": "^18.x || ^19.x",
+    "react-dom": "^18.x || ^19.x"
   },
-  "bugs": "https://github.com/gfazioli/mantine-rings-progress/issues"
+  "repository": "https://github.com/gfazioli/mantine-rings-progress.git",
+  "types": "./dist/types/index.d.ts",
+  "version": "1.0.1"
 }
