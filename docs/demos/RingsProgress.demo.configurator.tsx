@@ -10,11 +10,13 @@ function Wrapper(props: any) {
   ];
 
   return (
-    <Center>
-      <Box h={props.size} w={props.size}>
-        <RingsProgress rings={rings} {...props} />
-      </Box>
-    </Center>
+    <Box w="100%">
+      <Center>
+        <Box h={props.size} w={props.size}>
+          <RingsProgress rings={rings} {...props} />
+        </Box>
+      </Center>
+    </Box>
   );
 }
 
