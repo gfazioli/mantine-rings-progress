@@ -41,5 +41,5 @@
   },
   "repository": "https://github.com/gfazioli/mantine-rings-progress.git",
   "types": "./dist/types/index.d.ts",
-  "version": "1.1.1"
+  "version": "1.1.2"
 }
