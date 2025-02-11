@@ -1,15 +1,15 @@
+import React from 'react';
 import {
+  alpha,
   Box,
   Factory,
-  StylesApiProps,
-  alpha,
   factory,
   parseThemeColor,
+  StylesApiProps,
   useMantineTheme,
   useProps,
   useStyles,
 } from '@mantine/core';
-import React from 'react';
 import {
   RingProgress,
   RingProgressFactory,

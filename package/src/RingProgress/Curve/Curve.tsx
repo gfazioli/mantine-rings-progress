@@ -1,3 +1,4 @@
+import React from 'react';
 import {
   Box,
   GetStylesApi,
@@ -6,7 +7,6 @@ import {
   Tooltip,
   useMantineTheme,
 } from '@mantine/core';
-import React from 'react';
 import type { RingProgressFactory } from '../RingProgress';
 import { getCurveProps } from './get-curve-props';
 

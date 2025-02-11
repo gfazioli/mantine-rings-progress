@@ -1,7 +1,7 @@
 import { RingsProgress } from '@gfazioli/mantine-rings-progress';
+import { IconCheck } from '@tabler/icons-react';
 import { ActionIcon, Box, Center, rem } from '@mantine/core';
 import { MantineDemo } from '@mantinex/demo';
-import { IconCheck } from '@tabler/icons-react';
 
 function Wrapper(props: any) {
   const rings = [

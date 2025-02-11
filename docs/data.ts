@@ -27,7 +27,7 @@ export interface PackageData {
 export const PACKAGE_DATA: PackageData = {
   packageName: '@gfazioli/mantine-rings-progress',
   packageDescription: 'A Mantine component that replicates the progress rings of Apple Watch.',
-  mdxFileUrl: 'https://github.com/gfazioli/mantine-rings-progress/blob/master/docs/pages/index.mdx',
+  mdxFileUrl: 'https://github.com/gfazioli/mantine-rings-progress/blob/master/docs/docs.mdx',
   repositoryUrl: 'https://github.com/gfazioli/mantine-rings-progress',
   licenseUrl: 'https://github.com/gfazioli/mantine-rings-progress/blob/master/LICENSE',
   author: {

@@ -1,6 +1,6 @@
-import { ActionIcon, rem } from '@mantine/core';
-import { IconCheck } from '@tabler/icons-react';
 import React from 'react';
+import { IconCheck } from '@tabler/icons-react';
+import { ActionIcon, rem } from '@mantine/core';
 import { RingsProgress } from './RingsProgress';
 
 export default {

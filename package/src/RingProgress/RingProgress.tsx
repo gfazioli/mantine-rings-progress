@@ -1,3 +1,4 @@
+import React from 'react';
 import {
   Box,
   BoxProps,
@@ -11,7 +12,6 @@ import {
   useProps,
   useStyles,
 } from '@mantine/core';
-import React from 'react';
 import { Curve } from './Curve/Curve';
 import { getCurves } from './get-curves/get-curves';
 import classes from './RingProgress.module.css';
