@@ -1,9 +1,10 @@
 # Mantine Rings Progress Component
 
-<p align="center">
-  <img alt="" src="https://github.com/gfazioli/mantine-rings-progress/assets/432181/d3752711-6bae-43bc-9f8c-8e5c7bfc21ba">
+<div align="center">
+  
+  ![Image](https://github.com/gfazioli/mantine-rings-progress/assets/432181/d3752711-6bae-43bc-9f8c-8e5c7bfc21ba)
 
-</p>
+</div>
 
 ---
 
@@ -11,6 +12,7 @@
   
   [![NPM version](https://img.shields.io/npm/v/%40gfazioli%2Fmantine-rings-progress?style=for-the-badge)](https://www.npmjs.com/package/@gfazioli/mantine-rings-progress)
   [![NPM Downloads](https://img.shields.io/npm/dm/%40gfazioli%2Fmantine-rings-progress?style=for-the-badge)](https://www.npmjs.com/package/@gfazioli/mantine-rings-progress)
+  [![NPM Downloads](https://img.shields.io/npm/dy/%40gfazioli%2Fmantine-rings-progress?style=for-the-badge&label=%20&color=f90)](https://www.npmjs.com/package/@gfazioli/mantine-rings-progress)
   ![NPM License](https://img.shields.io/npm/l/%40gfazioli%2Fmantine-rings-progress?style=for-the-badge)
 
 </div>

@@ -54,4 +54,5 @@ export const tooltips: MantineDemo = {
   component: Wrapper,
   minHeight: 100,
   code,
+  defaultExpanded: false,
 };

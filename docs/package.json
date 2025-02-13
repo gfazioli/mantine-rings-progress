@@ -1,4 +1,13 @@
 {
+  "name": "extension-template-docs",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "build": "next build",
+    "dev": "next dev --port 9281",
+    "start": "next start",
+    "typecheck": "tsc --noEmit"
+  },
   "dependencies": {
     "@gfazioli/mantine-rings-progress": "workspace:*",
     "@mantine/core": "7.16.3",
@@ -27,14 +36,5 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "typescript": "5.7.3"
-  },
-  "name": "extension-template-docs",
-  "private": true,
-  "scripts": {
-    "build": "next build",
-    "dev": "next dev --port 9281",
-    "start": "next start",
-    "typecheck": "tsc --noEmit"
-  },
-  "version": "0.1.0"
+  }
 }

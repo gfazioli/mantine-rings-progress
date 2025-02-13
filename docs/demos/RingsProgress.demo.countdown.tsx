@@ -214,4 +214,5 @@ export const countdown: MantineDemo = {
   component: Wrapper,
   minHeight: 100,
   code,
+  defaultExpanded: false,
 };
