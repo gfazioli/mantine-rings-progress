@@ -20,8 +20,19 @@
 ## Overview
 
 This component is created on top of the [Mantine](https://mantine.dev/) library.
+
+[![Mantine UI Library](https://img.shields.io/badge/-MANTINE_UI_LIBRARY-blue?style=for-the-badge&labelColor=black&logo=mantine
+)](https://mantine.dev/)
+
 Display progress with animated rings like the Apple Watch activity app.
-You can find more components on the [Mantine Extensions Hub](https://mantine-extensions.vercel.app/) library.
+
+[![Demo and Documentation](https://img.shields.io/badge/-Demo_%26_Documentation-blue?style=for-the-badge&labelColor=black&logo=typescript
+)](https://gfazioli.github.io/mantine-rings-progress/)
+[![Mantine Extensions HUB](https://img.shields.io/badge/-Mantine_Extensions_Hub-blue?style=for-the-badge&labelColor=blue
+)](https://mantine-extensions.vercel.app/)
+
+
+👉 You can find more components on the [Mantine Extensions Hub](https://mantine-extensions.vercel.app/) library.
 
 ## Installation
 
