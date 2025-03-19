@@ -2,7 +2,11 @@
 
 <div align="center">
   
-  ![Image](https://github.com/gfazioli/mantine-rings-progress/assets/432181/d3752711-6bae-43bc-9f8c-8e5c7bfc21ba)
+
+
+https://github.com/user-attachments/assets/de494ff9-5e3c-4026-bdc3-0402110917e7
+
+
 
 </div>
 
@@ -76,24 +80,3 @@ function Demo() {
   );
 }
 ```
-
-## Props
-
-| Name                      | Type                                 | Description                                                             |
-|---------------------------|--------------------------------------|-------------------------------------------------------------------------|
-| animate                   | boolean                              | Animate                                                                 |
-| animationDuration         | number                               | Animation duration in ms                                                |
-| animationSteps            | number                               | Animation steps                                                         |
-| animationTimingFunction   | linear \| ease \| ease-in \| ease-out \| ease-in-out \| ease-in-cubic \| ease-out-cubic \| ease-in-out-cubic  | Animation timing function                                        |
-| gap                       | number                               | Gap between rings                                                        |
-| label                     | React.ReactNode                      | Label displayed in the center of the ring                                |
-| rings *                   | RingProgressSection[]                 | List of the rings                                                        |
-| rootColor                 | MantineColor                          | Color of the root section, key of theme.colors or CSS color value        |
-| rootColorAlpha            | number                               | Root color alpha                                                         |
-| roundCaps                 | boolean                              | Sets whether the edges of the progress circle are rounded                |
-| size                      | number                               | Width and height of the progress ring                                     |
-| thickness                 | number                               | Ring thickness                                                           |
-
-
-
-
