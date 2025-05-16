@@ -3,7 +3,7 @@ import { IconCheck } from '@tabler/icons-react';
 import { ActionIcon, Box, Center, rem } from '@mantine/core';
 import { MantineDemo } from '@mantinex/demo';
 
-function Wrapper(props: any) {
+function Wrapper() {
   const rings = [
     { value: 20, color: 'green', tooltip: 'Fitness – 40 Gb' },
     { value: 80, color: 'blue', tooltip: 'Running – 50 minutes' },

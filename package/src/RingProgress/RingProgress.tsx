@@ -127,7 +127,10 @@ export const RingProgress = factory<RingProgressFactory>((_props, ref) => {
     'ease-out': (t: number) => t * (2 - t),
     'ease-in-out': (t: number) => (t < 0.5 ? 0.5 * t * t : -0.5 * ((2 * t - 1) * (2 * t - 3) - 1)),
     'ease-in-cubic': (t: number) => t * t * t,
-    'ease-out-cubic': (t: number) => --t * t * t + 1,
+    'ease-out-cubic': (t: number) => {
+      const t1 = t - 1;
+      return t1 * t1 * t1 + 1;
+    },
     'ease-in-out-cubic': (t: number) =>
       t < 0.5 ? 4 * t * t * t : (t - 1) * (2 * t - 2) * (2 * t - 2) + 1,
   };

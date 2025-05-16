@@ -20,7 +20,9 @@ function Wrapper() {
   const [displayHundredthsSeconds, setDisplayHundredthsSeconds] = useState(false);
 
   useEffect(() => {
-    if (!isRunning) return;
+    if (!isRunning) {
+      return;
+    }
 
     const timer = setInterval(() => {
       setTimeLeft((prevTime) => (prevTime > 0 ? prevTime - 1 : 0));
