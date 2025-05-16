@@ -13,8 +13,8 @@ export default function HomePage() {
       <DocsTabs
         docgen={docgen}
         componentsProps={['RingsProgress']}
-        //componentsStyles={['RingsProgress']}
-        //stylesApiData={STYLES_API_DATA}
+        componentsStyles={['RingsProgress']}
+        stylesApiData={STYLES_API_DATA}
       >
         <Docs />
       </DocsTabs>

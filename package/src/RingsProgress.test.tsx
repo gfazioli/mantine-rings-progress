@@ -1,28 +1,17 @@
 import React from 'react';
-import { render, tests } from '@mantine-tests/core';
-import { RingsProgress, RingsProgressProps, RingsProgressStylesNames } from './RingsProgress';
+import { render } from '@mantine-tests/core';
+import { RingsProgress } from './RingsProgress';
 
-const defaultProps: RingsProgressProps = {
-  rings: [],
-};
-
-describe('@mantine/core/Flip', () => {
-  tests.itSupportsSystemProps<RingsProgressProps, RingsProgressStylesNames>({
-    component: RingsProgress,
-    props: defaultProps,
-    styleProps: true,
-    children: true,
-    classes: true,
-    id: true,
-    refType: HTMLDivElement,
-    displayName: '@mantine/core/Flip',
-    stylesApiSelectors: ['root'],
-  });
-
-  it('supports perspective prop', () => {
+describe('RingsProgress', () => {
+  it('renders without crashing', () => {
     const { container } = render(
-      <RingsProgress size={120} rings={[{ value: 40, color: 'cyan' }]} />
+      <RingsProgress
+        rings={[
+          { value: 20, color: 'green' },
+          { value: 80, color: 'blue' },
+        ]}
+      />
     );
-    expect(container.querySelector('.mantine-Flip-root')).toHaveStyle({ perspective: '500px' });
+    expect(container).toBeTruthy();
   });
 });

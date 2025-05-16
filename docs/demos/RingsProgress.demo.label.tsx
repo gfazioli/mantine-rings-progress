@@ -3,7 +3,7 @@ import { IconCheck } from '@tabler/icons-react';
 import { ActionIcon, Box, Center, rem } from '@mantine/core';
 import { MantineDemo } from '@mantinex/demo';
 
-function Wrapper(props: any) {
+function Wrapper() {
   const rings = [{ value: 20, color: 'green' }];
 
   return (
