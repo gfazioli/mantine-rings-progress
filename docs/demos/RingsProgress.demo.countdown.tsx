@@ -17,7 +17,7 @@ function Wrapper() {
   const [inputMinutes, setInputMinutes] = useState(10);
   const [timeLeft, setTimeLeft] = useState(inputMinutes * 60 * 100);
   const [isRunning, setIsRunning] = useState(false);
-  const [displayHundredthsSeconds, setDisplayHundredthsSeconds] = useState(false);
+  const [displayHundredthsSeconds, setDisplayHundredthsSeconds] = useState(true);
 
   useEffect(() => {
     if (!isRunning) {
