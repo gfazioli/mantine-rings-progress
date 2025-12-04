@@ -1,12 +1,6 @@
 # Mantine Rings Progress Component
 
-<div align="center">
-  
-https://github.com/user-attachments/assets/de494ff9-5e3c-4026-bdc3-0402110917e7
-
-</div>
-
----
+<img width="1376" height="768" alt="Gemini_Generated_Image_je2dlfje2dlfje2d" src="https://github.com/user-attachments/assets/48103e65-a98e-4827-8b62-e02a272881b6" />
 
 <div align="center">
   
@@ -80,5 +74,12 @@ function Demo() {
 <div align="center">
   
 [![Star History Chart](https://api.star-history.com/svg?repos=gfazioli/mantine-rings-progress&type=Timeline)](https://www.star-history.com/#gfazioli/mantine-rings-progress&Timeline)
+
+---
+<div align="center">
+  
+https://github.com/user-attachments/assets/de494ff9-5e3c-4026-bdc3-0402110917e7
+
+</div>
 
 </div>
