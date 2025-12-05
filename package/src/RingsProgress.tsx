@@ -25,8 +25,7 @@ export type RingsProgressCssVariables = {
 };
 
 export interface RingsProgressProps
-  extends Omit<RingProgressProps, 'sections' | 'rootColor'>,
-    StylesApiProps<RingProgressFactory> {
+  extends Omit<RingProgressProps, 'sections' | 'rootColor'>, StylesApiProps<RingProgressFactory> {
   /** List of the rings */
   rings: RingProgressSection[];
 
