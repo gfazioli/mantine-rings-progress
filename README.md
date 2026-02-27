@@ -1,6 +1,6 @@
 # Mantine Rings Progress Component
 
-<img alt="Mantine Rings Progress" src="https://github.com/gfazioli/mantine-rings-progress/blob/master/logo.png" />
+<img alt="Mantine Rings Progress" src="https://github.com/gfazioli/mantine-rings-progress/blob/master/logo.jpeg" />
 
 <div align="center">
   
