@@ -12,9 +12,7 @@ export default {
     rootColorAlpha: 0.15,
     animate: false,
     roundCaps: true,
-    animationDuration: 1000,
-    animationSteps: 60,
-    animationTimingFunction: 'ease',
+    transitionDuration: 1000,
     label: null,
   },
   argTypes: {
@@ -24,23 +22,7 @@ export default {
     rootColorAlpha: { control: { type: 'range', min: 0, max: 1, step: 0.05 } },
     animate: { control: { type: 'boolean' } },
     roundCaps: { control: { type: 'boolean' } },
-    animationDuration: { control: { type: 'range', min: 100, max: 2000, step: 100 } },
-    animationSteps: { control: { type: 'range', min: 10, max: 120, step: 10 } },
-    animationTimingFunction: {
-      options: [
-        'linear',
-        'ease',
-        'ease-in',
-        'ease-out',
-        'ease-in-out',
-        'ease-in-cubic',
-        'ease-out-cubic',
-        'ease-in-out-cubic',
-      ],
-      control: {
-        type: 'select',
-      },
-    },
+    transitionDuration: { control: { type: 'range', min: 100, max: 5000, step: 100 } },
     label: { control: { type: 'text' } },
   },
 };
@@ -58,9 +40,7 @@ export function Usage(p: any) {
         rings={rings}
         animate={p.animate}
         roundCaps={p.roundCaps}
-        animationDuration={p.animationDuration}
-        animationSteps={p.animationSteps}
-        animationTimingFunction={p.animationTimingFunction}
+        transitionDuration={p.transitionDuration}
         label={p.label}
         size={p.size}
         thickness={p.thickness}
@@ -80,9 +60,7 @@ export function Label(p: any) {
         rings={rings}
         animate={p.animate}
         roundCaps={p.roundCaps}
-        animationDuration={p.animationDuration}
-        animationSteps={p.animationSteps}
-        animationTimingFunction={p.animationTimingFunction}
+        transitionDuration={p.transitionDuration}
         label={
           <ActionIcon color="teal" variant="light" radius="xl" size="xl">
             <IconCheck style={{ width: rem(22), height: rem(22) }} />

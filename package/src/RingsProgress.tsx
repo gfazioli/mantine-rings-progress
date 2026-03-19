@@ -1,39 +1,57 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   alpha,
   Box,
+  BoxProps,
+  ElementProps,
   Factory,
   factory,
   parseThemeColor,
+  RingProgress,
   StylesApiProps,
   useMantineTheme,
   useProps,
   useStyles,
+  type RingProgressProps,
 } from '@mantine/core';
-import {
-  RingProgress,
-  RingProgressFactory,
-  RingProgressProps,
-  RingProgressSection,
-} from './RingProgress';
 import classes from './RingsProgress.module.css';
+
+export type RingProgressSection = RingProgressProps['sections'][number];
 
 export type RingsProgressStylesNames = 'root' | 'ring';
 
 export type RingsProgressCssVariables = {
-  root: '--rings-none';
+  root: '--rp-size';
 };
 
 export interface RingsProgressProps
-  extends Omit<RingProgressProps, 'sections' | 'rootColor'>, StylesApiProps<RingProgressFactory> {
-  /** List of the rings */
+  extends BoxProps, StylesApiProps<RingsProgressFactory>, ElementProps<'div'> {
+  /** List of rings to display as concentric circles */
   rings: RingProgressSection[];
 
-  /** Gap between rings */
+  /** Gap between rings, default: 8 */
   gap?: number;
 
-  /** Root color alpha */
+  /** Alpha for root color derived from ring color, default: 0.15 */
   rootColorAlpha?: number;
+
+  /** Width and height of the outermost ring, default: 120 */
+  size?: number;
+
+  /** Ring thickness, default: 12 */
+  thickness?: number;
+
+  /** Rounded line caps, default: true */
+  roundCaps?: boolean;
+
+  /** Label displayed in the center of the innermost ring */
+  label?: React.ReactNode;
+
+  /** Enable entrance animation (mount from 0 to target), default: false */
+  animate?: boolean;
+
+  /** Transition duration in ms (for entrance animation and value changes), default: 1000 */
+  transitionDuration?: number;
 }
 
 export type RingsProgressFactory = Factory<{
@@ -49,16 +67,14 @@ const defaultProps: Partial<RingsProgressProps> = {
   gap: 8,
   animate: false,
   roundCaps: true,
-  animationDuration: 1000,
-  animationSteps: 60,
-  animationTimingFunction: 'ease',
+  transitionDuration: 1000,
   rootColorAlpha: 0.15,
 };
 
 export const RingsProgress = factory<RingsProgressFactory>((_props, ref) => {
   const theme = useMantineTheme();
 
-  const props = useProps('Rings', defaultProps, _props);
+  const props = useProps('RingsProgress', defaultProps, _props);
 
   const {
     rings,
@@ -68,10 +84,12 @@ export const RingsProgress = factory<RingsProgressFactory>((_props, ref) => {
     rootColorAlpha,
     label,
     animate,
-    animationSteps,
-    animationDuration,
-    animationTimingFunction,
+    transitionDuration,
     roundCaps,
+    classNames,
+    styles,
+    unstyled,
+    vars,
     ...others
   } = props;
 
@@ -79,39 +97,45 @@ export const RingsProgress = factory<RingsProgressFactory>((_props, ref) => {
     name: 'RingsProgress',
     props,
     classes,
+    classNames,
+    styles,
+    unstyled,
+    vars,
   });
 
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    if (animate) {
+      requestAnimationFrame(() => {
+        setMounted(true);
+      });
+    }
+  }, [animate]);
+
   return (
-    <Box ref={ref} {...getStyles('root')} {...others}>
+    <Box ref={ref} {...getStyles('root', { style: { width: size, height: size } })} {...others}>
       {rings.map((ring, index) => {
         const parsedColor = parseThemeColor({ color: ring.color, theme });
+        const effectiveValue = animate && !mounted ? 0 : ring.value;
 
         return (
           <RingProgress
-            label={index === rings.length - 1 ? label : null}
-            key={ring.value + ring.color + index}
+            key={index}
+            label={index === rings.length - 1 ? label : undefined}
             rootColor={alpha(parsedColor.value, rootColorAlpha)}
             size={size - index * ((thickness + gap) * 2)}
             thickness={thickness}
             roundCaps={roundCaps}
-            animate={animate}
-            animationDuration={animationDuration}
-            animationSteps={animationSteps}
-            animationTimingFunction={animationTimingFunction}
-            left={index * (thickness + gap)}
-            top={index * (thickness + gap)}
-            {...getStyles('ring')}
-            styles={{
-              label: {
+            transitionDuration={transitionDuration}
+            sections={[{ ...ring, value: effectiveValue }]}
+            {...getStyles('ring', {
+              style: {
                 position: 'absolute',
-                top: '50%',
-                left: '50% ',
-                transform: 'translate(-50%,-50%)',
-                right: 'auto',
-                color: 'red',
+                top: index * (thickness + gap),
+                left: index * (thickness + gap),
               },
-            }}
-            sections={[ring]}
+            })}
           />
         );
       })}

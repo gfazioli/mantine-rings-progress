@@ -4,14 +4,14 @@ import type { StylesApiData } from '../components/styles-api.types';
 export const RingsProgressStylesApi: StylesApiData<RingsProgressFactory> = {
   selectors: {
     root: 'Root element',
-    ring: 'Rings children',
+    ring: 'Ring element',
   },
 
   vars: {
     root: {
-      '--rings-none': 'Controls',
+      '--rp-size': 'Controls the size of the outermost ring',
     },
   },
 
-  modifiers: [{ modifier: 'data-centered', selector: 'root', condition: '`centered` prop is set' }],
+  modifiers: [],
 };
