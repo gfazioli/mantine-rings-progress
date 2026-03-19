@@ -138,9 +138,7 @@ export const RingsProgress = factory<RingsProgressFactory>((_props, ref) => {
           />
         );
       })}
-      {label && (
-        <Box {...getStyles('label')}>{label}</Box>
-      )}
+      {label && <Box {...getStyles('label')}>{label}</Box>}
     </Box>
   );
 });

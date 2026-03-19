@@ -90,6 +90,7 @@ function Wrapper() {
           <RingsProgress
             size={200}
             thickness={12}
+            transitionDuration={0}
             rings={rings}
             label={
               <ActionIcon color="yellow" variant="outline" radius="xl" size={64}>
@@ -195,6 +196,7 @@ function Demo() {
           <RingsProgress
             size={200}
             thickness={12}
+            transitionDuration={0}
             rings={rings}
             label={
               <ActionIcon color="yellow" variant="outline" radius="xl" size={64}>
