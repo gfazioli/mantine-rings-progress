@@ -18,7 +18,7 @@ import classes from './RingsProgress.module.css';
 
 export type RingProgressSection = RingProgressProps['sections'][number];
 
-export type RingsProgressStylesNames = 'root' | 'ring';
+export type RingsProgressStylesNames = 'root' | 'ring' | 'label';
 
 export type RingsProgressCssVariables = {
   root: '--rp-size';
@@ -122,7 +122,6 @@ export const RingsProgress = factory<RingsProgressFactory>((_props, ref) => {
         return (
           <RingProgress
             key={index}
-            label={index === rings.length - 1 ? label : undefined}
             rootColor={alpha(parsedColor.value, rootColorAlpha)}
             size={size - index * ((thickness + gap) * 2)}
             thickness={thickness}
@@ -139,6 +138,9 @@ export const RingsProgress = factory<RingsProgressFactory>((_props, ref) => {
           />
         );
       })}
+      {label && (
+        <Box {...getStyles('label')}>{label}</Box>
+      )}
     </Box>
   );
 });
