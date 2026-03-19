@@ -4,3 +4,4 @@ export type {
   RingsProgressFactory,
   RingsProgressProps,
 } from './RingsProgress';
+export type { RingProgressSection } from './RingsProgress';

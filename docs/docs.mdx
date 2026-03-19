@@ -21,11 +21,13 @@ import '@gfazioli/mantine-rings-progress/styles.layer.css';
 
 <Demo data={demos.configurator} />
 
-> **Mantine RingProgress**
->
-> We're using a custom version of the `RingProgress` component from the `mantine` library to render the rings.
+The `RingsProgress` component renders multiple concentric `RingProgress` rings from `@mantine/core`. Each ring supports the standard Mantine `RingProgressSection` props including `color`, `value`, and `tooltip`.
 
 The `label` prop can be a string or a component. Try to change the label on the above configurator. You may use also an emoji 😊 or a custom component.
+
+## Entrance Animation
+
+Set `animate` to enable entrance animation — rings mount with `value: 0` and smoothly transition to their target values. Control the speed with `transitionDuration` (in ms, default: 1000).
 
 ## Label
 
@@ -43,6 +45,6 @@ Despite the `RingProgress` component from the `mantine` library has a `tooltip` 
 
 ## Example: Countdown
 
-Below, another example of the `RingProgress` component from the `mantine` library. This time, we're using it to render a countdown.
+Below, another example using `RingsProgress` to render a countdown timer.
 
 <Demo data={demos.countdown} />
