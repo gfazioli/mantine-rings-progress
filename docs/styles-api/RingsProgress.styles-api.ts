@@ -5,6 +5,7 @@ export const RingsProgressStylesApi: StylesApiData<RingsProgressFactory> = {
   selectors: {
     root: 'Root element',
     ring: 'Ring element',
+    label: 'Label element centered in the rings',
   },
 
   vars: {
