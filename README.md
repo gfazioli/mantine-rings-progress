@@ -23,11 +23,11 @@ This component is created on top of the [Mantine](https://mantine.dev/) library.
 
 ### Features
 
-- **Per-ring customization** — Override `thickness` and `roundCaps` on individual rings
+- **Per-ring customization** — Override `thickness`, `roundCaps`, and `rootColor` on individual rings
 - **Entrance animation** — Animate rings from 0 to their target values on mount
 - **Staggered animation** — Animate rings one after another with configurable delay
 - **Glow / neon effect** — `drop-shadow` glow that follows the ring shape, with per-ring intensity and color
-- **Pulse on completion** — Subtle pulse animation when a ring reaches 100%
+- **Pulse on completion** — Subtle pulse animation when a ring reaches 100%, with `onRingComplete` callback
 - **Start angle & direction** — Customize where rings start filling and in which direction (clockwise/counterclockwise)
 - **Tooltip props** — Full control over `Tooltip.Floating` per-ring or globally
 - **Accessibility** — `role="progressbar"` with ARIA attributes on each ring, `prefers-reduced-motion` support

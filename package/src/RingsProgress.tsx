@@ -47,6 +47,9 @@ export interface RingsProgressRing {
   /** Glow color for this ring, defaults to ring color */
   glowColor?: MantineColor;
 
+  /** Override rootColor for this specific ring (defaults to alpha of ring color) */
+  rootColor?: MantineColor;
+
   /** Accessible label for this ring, defaults to "Ring {index}: {value}%" */
   ariaLabel?: string;
 }
@@ -103,6 +106,9 @@ export interface RingsProgressProps
 
   /** Ring fill direction, default: 'clockwise' */
   direction?: 'clockwise' | 'counterclockwise';
+
+  /** Callback fired when a ring value reaches 100% */
+  onRingComplete?: (index: number, ring: RingsProgressRing) => void;
 }
 
 export type RingsProgressFactory = Factory<{
@@ -149,6 +155,7 @@ export const RingsProgress = factory<RingsProgressFactory>((_props, ref) => {
     pulseOnComplete,
     startAngle,
     direction,
+    onRingComplete,
     classNames,
     styles,
     unstyled,
@@ -217,22 +224,28 @@ export const RingsProgress = factory<RingsProgressFactory>((_props, ref) => {
   const ringValuesKey = useMemo(() => rings.map((r) => r.value).join(','), [rings]);
 
   useEffect(() => {
-    if (!pulseOnComplete || reduceMotion) {
-      return;
-    }
-
     const currentValues = rings.map((r) => r.value);
-    const newPulsing = currentValues.map((value, i) => {
+    const crossedComplete = currentValues.map((value, i) => {
       const prev = prevValuesRef.current[i] ?? 0;
       return value >= 100 && prev < 100;
     });
 
-    if (newPulsing.some(Boolean)) {
-      setPulsingRings(newPulsing);
+    // Fire onRingComplete callback for each ring that just reached 100%
+    if (onRingComplete) {
+      crossedComplete.forEach((crossed, i) => {
+        if (crossed) {
+          onRingComplete(i, rings[i]);
+        }
+      });
+    }
+
+    // Trigger pulse animation
+    if (pulseOnComplete && !reduceMotion && crossedComplete.some(Boolean)) {
+      setPulsingRings(crossedComplete);
     }
 
     prevValuesRef.current = currentValues;
-  }, [ringValuesKey, pulseOnComplete, reduceMotion]);
+  }, [ringValuesKey, pulseOnComplete, reduceMotion, onRingComplete]);
 
   const handleAnimationEnd = useCallback((index: number) => {
     setPulsingRings((prev) => {
@@ -286,6 +299,7 @@ export const RingsProgress = factory<RingsProgressFactory>((_props, ref) => {
           tooltipProps: ringTooltipProps,
           glowIntensity,
           glowColor,
+          rootColor: ringRootColor,
           ...ringSection
         } = ring;
 
@@ -313,7 +327,11 @@ export const RingsProgress = factory<RingsProgressFactory>((_props, ref) => {
         const ringElement = (
           <RingProgress
             key={index}
-            rootColor={alpha(parsedColor.value, rootColorAlpha)}
+            rootColor={
+              ringRootColor
+                ? parseThemeColor({ color: ringRootColor, theme }).value
+                : alpha(parsedColor.value, rootColorAlpha)
+            }
             size={size - offsets[index] * 2}
             thickness={ringThickness}
             roundCaps={ringRoundCaps}
