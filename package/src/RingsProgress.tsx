@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
   alpha,
   Box,
@@ -12,11 +12,33 @@ import {
   useMantineTheme,
   useProps,
   useStyles,
+  type MantineColor,
   type RingProgressProps,
 } from '@mantine/core';
+import { useReducedMotion } from '@mantine/hooks';
 import classes from './RingsProgress.module.css';
 
 export type RingProgressSection = RingProgressProps['sections'][number];
+
+export interface RingsProgressRing {
+  /** Ring value (0-100) */
+  value: number;
+
+  /** Ring color, key of theme.colors or CSS color value */
+  color: MantineColor;
+
+  /** Tooltip content displayed on hover */
+  tooltip?: React.ReactNode;
+
+  /** Override thickness for this specific ring */
+  thickness?: number;
+
+  /** Override roundCaps for this specific ring */
+  roundCaps?: boolean;
+
+  /** Accessible label for this ring, defaults to "Ring {index}: {value}%" */
+  ariaLabel?: string;
+}
 
 export type RingsProgressStylesNames = 'root' | 'ring' | 'label';
 
@@ -27,7 +49,7 @@ export type RingsProgressCssVariables = {
 export interface RingsProgressProps
   extends BoxProps, StylesApiProps<RingsProgressFactory>, ElementProps<'div'> {
   /** List of rings to display as concentric circles */
-  rings: RingProgressSection[];
+  rings: RingsProgressRing[];
 
   /** Gap between rings, default: 8 */
   gap?: number;
@@ -44,14 +66,17 @@ export interface RingsProgressProps
   /** Rounded line caps, default: true */
   roundCaps?: boolean;
 
-  /** Label displayed in the center of the innermost ring */
+  /** Label displayed in the center of the rings */
   label?: React.ReactNode;
 
   /** Enable entrance animation (mount from 0 to target), default: false */
   animate?: boolean;
 
-  /** Transition duration in ms (for entrance animation and value changes), default: 1000 */
+  /** Transition duration in ms for entrance animation and value changes, default: 0 */
   transitionDuration?: number;
+
+  /** Delay between each ring's entrance animation in ms, default: 0 (simultaneous) */
+  staggerDelay?: number;
 }
 
 export type RingsProgressFactory = Factory<{
@@ -67,12 +92,14 @@ const defaultProps: Partial<RingsProgressProps> = {
   gap: 8,
   animate: false,
   roundCaps: true,
-  transitionDuration: 1000,
+  transitionDuration: 0,
   rootColorAlpha: 0.15,
+  staggerDelay: 0,
 };
 
 export const RingsProgress = factory<RingsProgressFactory>((_props, ref) => {
   const theme = useMantineTheme();
+  const reduceMotion = useReducedMotion();
 
   const props = useProps('RingsProgress', defaultProps, _props);
 
@@ -86,6 +113,7 @@ export const RingsProgress = factory<RingsProgressFactory>((_props, ref) => {
     animate,
     transitionDuration,
     roundCaps,
+    staggerDelay,
     classNames,
     styles,
     unstyled,
@@ -103,36 +131,114 @@ export const RingsProgress = factory<RingsProgressFactory>((_props, ref) => {
     vars,
   });
 
-  const [mounted, setMounted] = useState(false);
+  // Staggered entrance animation state
+  const [mountedRings, setMountedRings] = useState<boolean[]>(() =>
+    rings.map(() => !animate || reduceMotion)
+  );
+  const timeoutsRef = useRef<ReturnType<typeof setTimeout>[]>([]);
+
+  const cleanupTimeouts = useCallback(() => {
+    timeoutsRef.current.forEach(clearTimeout);
+    timeoutsRef.current = [];
+  }, []);
 
   useEffect(() => {
-    if (animate) {
+    if (!animate || reduceMotion) {
+      setMountedRings(rings.map(() => true));
+      return;
+    }
+
+    // Reset all rings to unmounted
+    setMountedRings(rings.map(() => false));
+    cleanupTimeouts();
+
+    // Stagger each ring's mount
+    const delay = staggerDelay || 0;
+    rings.forEach((_, index) => {
+      const timeout = setTimeout(
+        () => {
+          setMountedRings((prev) => {
+            const next = [...prev];
+            next[index] = true;
+            return next;
+          });
+        },
+        delay > 0 ? index * delay : 0
+      );
+      timeoutsRef.current.push(timeout);
+    });
+
+    // If no stagger, use rAF for the initial paint-then-animate trick
+    if (delay === 0) {
+      cleanupTimeouts();
       requestAnimationFrame(() => {
-        setMounted(true);
+        setMountedRings(rings.map(() => true));
       });
     }
-  }, [animate]);
+
+    return cleanupTimeouts;
+  }, [animate, reduceMotion, rings.length, staggerDelay]);
+
+  // During entrance animation, use transitionDuration (default 1000ms if animate is on but no explicit duration)
+  // After animation completes or when not animating, use transitionDuration as-is (default 0)
+  const allMounted = mountedRings.every(Boolean);
+  const effectiveTransitionDuration = reduceMotion
+    ? 0
+    : animate && !allMounted
+      ? transitionDuration || 1000
+      : transitionDuration;
+
+  // Compute cumulative offsets for per-ring thickness support
+  const offsets: number[] = [];
+  let cumulativeOffset = 0;
+  for (let i = 0; i < rings.length; i++) {
+    offsets.push(cumulativeOffset);
+    const ringThickness = rings[i].thickness ?? thickness;
+    cumulativeOffset += ringThickness + gap;
+  }
 
   return (
-    <Box ref={ref} {...getStyles('root', { style: { width: size, height: size } })} {...others}>
+    <Box
+      ref={ref}
+      {...getStyles('root', { style: { width: size, height: size } })}
+      role="group"
+      aria-label="Progress rings"
+      {...others}
+    >
       {rings.map((ring, index) => {
+        const {
+          thickness: ringThicknessOverride,
+          roundCaps: ringRoundCapsOverride,
+          ariaLabel: ringAriaLabelOverride,
+          ...ringSection
+        } = ring;
+
         const parsedColor = parseThemeColor({ color: ring.color, theme });
-        const effectiveValue = animate && !mounted ? 0 : ring.value;
+        const effectiveValue = animate && !mountedRings[index] ? 0 : ring.value;
+        const ringThickness = ringThicknessOverride ?? thickness;
+        const ringRoundCaps = ringRoundCapsOverride ?? roundCaps;
+        const ringAriaLabel =
+          ringAriaLabelOverride ?? `Ring ${index + 1}: ${Math.round(ring.value)}%`;
 
         return (
           <RingProgress
             key={index}
             rootColor={alpha(parsedColor.value, rootColorAlpha)}
-            size={size - index * ((thickness + gap) * 2)}
-            thickness={thickness}
-            roundCaps={roundCaps}
-            transitionDuration={transitionDuration}
-            sections={[{ ...ring, value: effectiveValue }]}
+            size={size - offsets[index] * 2}
+            thickness={ringThickness}
+            roundCaps={ringRoundCaps}
+            transitionDuration={effectiveTransitionDuration}
+            sections={[{ ...ringSection, value: effectiveValue }]}
+            role="progressbar"
+            aria-valuenow={Math.round(ring.value)}
+            aria-valuemin={0}
+            aria-valuemax={100}
+            aria-label={ringAriaLabel}
             {...getStyles('ring', {
               style: {
                 position: 'absolute',
-                top: index * (thickness + gap),
-                left: index * (thickness + gap),
+                top: offsets[index],
+                left: offsets[index],
               },
             })}
           />

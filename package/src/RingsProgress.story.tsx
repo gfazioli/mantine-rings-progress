@@ -13,6 +13,7 @@ export default {
     animate: false,
     roundCaps: true,
     transitionDuration: 1000,
+    staggerDelay: 0,
     label: null,
   },
   argTypes: {
@@ -23,6 +24,7 @@ export default {
     animate: { control: { type: 'boolean' } },
     roundCaps: { control: { type: 'boolean' } },
     transitionDuration: { control: { type: 'range', min: 100, max: 5000, step: 100 } },
+    staggerDelay: { control: { type: 'range', min: 0, max: 1000, step: 50 } },
     label: { control: { type: 'text' } },
   },
 };
@@ -41,7 +43,55 @@ export function Usage(p: any) {
         animate={p.animate}
         roundCaps={p.roundCaps}
         transitionDuration={p.transitionDuration}
+        staggerDelay={p.staggerDelay}
         label={p.label}
+        size={p.size}
+        thickness={p.thickness}
+        gap={p.gap}
+        rootColorAlpha={p.rootColorAlpha}
+      />
+    </div>
+  );
+}
+
+export function PerRingThickness(p: any) {
+  const rings = [
+    { value: 40, color: 'cyan', thickness: 18 },
+    { value: 65, color: 'red', thickness: 10 },
+    { value: 90, color: '#f90', thickness: 6 },
+  ];
+
+  return (
+    <div style={{ padding: 40 }}>
+      <RingsProgress
+        rings={rings}
+        animate={p.animate}
+        roundCaps={p.roundCaps}
+        transitionDuration={p.transitionDuration}
+        staggerDelay={p.staggerDelay}
+        size={p.size}
+        gap={p.gap}
+        rootColorAlpha={p.rootColorAlpha}
+      />
+    </div>
+  );
+}
+
+export function StaggeredAnimation(p: any) {
+  const rings = [
+    { value: 75, color: 'green' },
+    { value: 50, color: 'blue' },
+    { value: 90, color: 'orange' },
+  ];
+
+  return (
+    <div style={{ padding: 40 }}>
+      <RingsProgress
+        rings={rings}
+        animate
+        staggerDelay={300}
+        transitionDuration={p.transitionDuration}
+        roundCaps={p.roundCaps}
         size={p.size}
         thickness={p.thickness}
         gap={p.gap}

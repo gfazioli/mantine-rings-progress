@@ -1,8 +1,12 @@
+import { useState } from 'react';
 import { RingsProgress } from '@gfazioli/mantine-rings-progress';
-import { Box, Center } from '@mantine/core';
+import { IconRefresh } from '@tabler/icons-react';
+import { ActionIcon, Box, Center, Group, Tooltip } from '@mantine/core';
 import { MantineDemo } from '@mantinex/demo';
 
 function Wrapper(props: any) {
+  const [key, setKey] = useState(0);
+
   const rings = [
     { value: 20, color: 'cyan' },
     { value: 50, color: 'red' },
@@ -12,8 +16,15 @@ function Wrapper(props: any) {
   return (
     <Box w="100%">
       <Center>
-        <Box h={props.size} w={props.size}>
-          <RingsProgress rings={rings} {...props} />
+        <Box h={props.size} w={props.size} pos="relative">
+          <RingsProgress key={key} rings={rings} {...props} />
+          <Group pos="absolute" bottom={-36} left={0} right={0} justify="center">
+            <Tooltip label="Replay animation">
+              <ActionIcon variant="subtle" size="sm" onClick={() => setKey((k) => k + 1)}>
+                <IconRefresh size={16} />
+              </ActionIcon>
+            </Tooltip>
+          </Group>
         </Box>
       </Center>
     </Box>
@@ -45,7 +56,6 @@ export const configurator: MantineDemo = {
     {
       prop: 'animate',
       type: 'boolean',
-
       initialValue: false,
       libraryValue: false,
     },
@@ -89,11 +99,20 @@ export const configurator: MantineDemo = {
     {
       prop: 'transitionDuration',
       type: 'number',
-      min: 100,
+      min: 0,
       max: 5000,
-      step: 1,
+      step: 100,
       initialValue: 1000,
-      libraryValue: 1000,
+      libraryValue: 0,
+    },
+    {
+      prop: 'staggerDelay',
+      type: 'number',
+      min: 0,
+      max: 1000,
+      step: 50,
+      initialValue: 0,
+      libraryValue: 0,
     },
     {
       prop: 'label',
