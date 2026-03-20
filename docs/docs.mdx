@@ -33,7 +33,7 @@ Each ring can override the global `thickness` and `roundCaps` props, allowing yo
 
 ## Entrance Animation
 
-Set `animate` to enable entrance animation — rings mount with `value: 0` and smoothly transition to their target values. Control the speed with `transitionDuration` (in ms, default: 1000).
+Set `animate` to enable entrance animation — rings mount with `value: 0` and smoothly transition to their target values. Control the speed with `transitionDuration` (in ms). When `animate` is enabled the component automatically uses a 1000ms transition if no explicit `transitionDuration` is set.
 
 ### Staggered Animation
 
@@ -41,9 +41,27 @@ Use `staggerDelay` (in ms) to animate rings one after another instead of simulta
 
 <Demo data={demos.stagger} />
 
+## Glow Effect
+
+Enable a neon-like glow behind rings with the `glow` prop. Set it to `true` for a default 6px glow, or pass a number for a custom blur radius. Each ring can override the glow with `glowIntensity` and `glowColor` props. Best visible on dark backgrounds.
+
+<Demo data={demos.glow} />
+
+## Start Angle & Direction
+
+Use `startAngle` (in degrees) to change where rings start filling from — `0` is the 12 o'clock position. Set `direction` to `"counterclockwise"` to reverse the fill direction.
+
+<Demo data={demos.direction} />
+
+## Tooltip Props
+
+Each ring supports a `tooltip` prop for hover content. You can customize the tooltip with `tooltipProps` per-ring or globally on the component. The tooltip is rendered using Mantine's `Tooltip.Floating`.
+
+<Demo data={demos.tooltips} />
+
 ## Accessibility
 
-The component renders with `role="group"` and each ring has `role="progressbar"` with proper `aria-valuenow`, `aria-valuemin`, and `aria-valuemax` attributes. You can customize the accessible label with `ariaLabel` on the component or per-ring.
+The component renders with `role="group"` and each ring has `role="progressbar"` with proper `aria-valuenow`, `aria-valuemin`, and `aria-valuemax` attributes. You can customize the accessible label with `aria-label` on the component or `ariaLabel` per-ring.
 
 The component automatically respects `prefers-reduced-motion` — when enabled, all animations are disabled.
 
@@ -54,12 +72,6 @@ The component automatically respects `prefers-reduced-motion` — when enabled, 
 The `label` prop can be a string or a component.
 
 <Demo data={demos.labels} />
-
-## Tooltips
-
-Despite the `RingProgress` component from the `mantine` library has a `tooltip` prop, we discourage its use. The tooltip will be rendered on the top of the rings and it will be hard to read the label.
-
-<Demo data={demos.tooltips} />
 
 ## Example: Countdown
 

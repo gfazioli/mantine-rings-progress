@@ -14,5 +14,11 @@ export const RingsProgressStylesApi: StylesApiData<RingsProgressFactory> = {
     },
   },
 
-  modifiers: [],
+  modifiers: [
+    {
+      modifier: 'data-pulsing',
+      selector: 'ring',
+      condition: '`pulseOnComplete` is true and ring reaches 100%',
+    },
+  ],
 };

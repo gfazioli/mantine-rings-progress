@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { RingsProgress } from '@gfazioli/mantine-rings-progress';
 import { IconRefresh } from '@tabler/icons-react';
-import { ActionIcon, Box, Center, Stack, Tooltip } from '@mantine/core';
+import { ActionIcon, Box, Stack, Tooltip } from '@mantine/core';
 import { MantineDemo } from '@mantinex/demo';
 
 function Wrapper() {
