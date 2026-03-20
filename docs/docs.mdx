@@ -27,7 +27,7 @@ The `label` prop can be a string or a component. Try to change the label on the 
 
 ## Per-ring Customization
 
-Each ring can override the global `thickness` and `roundCaps` props, allowing you to create rings with different widths.
+Each ring can override the global `thickness` and `roundCaps` props, allowing you to create rings with different widths. You can also set a custom `rootColor` per ring to control the background track color independently.
 
 <Demo data={demos.perring} />
 
@@ -50,6 +50,8 @@ Enable a neon-like glow behind rings with the `glow` prop. Set it to `true` for 
 ## Pulse on Completion
 
 Set `pulseOnComplete` to trigger a subtle pulse animation when a ring reaches 100%. This provides visual feedback when a goal is achieved — inspired by the Apple Watch ring completion celebration. Drag the sliders to 100% or click the button to see the effect.
+
+You can also use the `onRingComplete` callback to run custom logic when a ring reaches 100% (e.g., show a notification, play a sound).
 
 <Demo data={demos.pulse} />
 

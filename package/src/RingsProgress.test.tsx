@@ -250,4 +250,28 @@ describe('RingsProgress', () => {
     );
     expect(container).toBeTruthy();
   });
+
+  // Per-ring rootColor
+  it('renders with per-ring rootColor override', () => {
+    const { container } = render(
+      <RingsProgress
+        rings={[
+          { value: 50, color: 'green', rootColor: 'gray' },
+          { value: 80, color: 'blue' },
+        ]}
+      />,
+      { wrapper: TestWrapper }
+    );
+    expect(container).toBeTruthy();
+  });
+
+  // onRingComplete callback
+  it('renders with onRingComplete prop', () => {
+    const onComplete = jest.fn();
+    const { container } = render(
+      <RingsProgress onRingComplete={onComplete} rings={[{ value: 100, color: 'green' }]} />,
+      { wrapper: TestWrapper }
+    );
+    expect(container).toBeTruthy();
+  });
 });
