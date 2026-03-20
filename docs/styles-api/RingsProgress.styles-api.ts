@@ -10,7 +10,7 @@ export const RingsProgressStylesApi: StylesApiData<RingsProgressFactory> = {
 
   vars: {
     root: {
-      '--rp-size': 'Controls the size of the outermost ring',
+      '--rp-transition-duration': 'Transition duration for entrance animation and value changes',
     },
   },
 
