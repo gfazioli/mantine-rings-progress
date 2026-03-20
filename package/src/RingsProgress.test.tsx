@@ -90,7 +90,7 @@ describe('RingsProgress', () => {
     expect(container).toBeTruthy();
   });
 
-  // Feature 1: Per-ring customization
+  // Per-ring customization
   it('supports per-ring thickness override', () => {
     const { container } = render(
       <RingsProgress
@@ -121,7 +121,7 @@ describe('RingsProgress', () => {
     expect(container.firstElementChild).toBeTruthy();
   });
 
-  // Feature 2: Staggered animation
+  // Staggered animation
   it('renders with staggerDelay prop without errors', () => {
     const { container } = render(
       <RingsProgress
@@ -138,13 +138,12 @@ describe('RingsProgress', () => {
     expect(container).toBeTruthy();
   });
 
-  // Feature 3: Accessibility
+  // Accessibility
   it('renders with role="group" and custom aria-label on root', () => {
     const { container } = render(
       <RingsProgress aria-label="Activity rings" rings={[{ value: 50, color: 'cyan' }]} />,
       { wrapper: TestWrapper }
     );
-    // MantineProvider wraps in an extra div, find the RingsProgress root
     const root = container.querySelector('[role="group"]') as HTMLElement;
     expect(root).toBeTruthy();
     expect(root?.getAttribute('aria-label')).toBe('Activity rings');
@@ -189,5 +188,66 @@ describe('RingsProgress', () => {
     const root = container.querySelector('[role="group"]') as HTMLElement;
     expect(root).toBeTruthy();
     expect(root?.getAttribute('aria-label')).toBe('Progress rings');
+  });
+
+  // Tooltip props
+  it('renders with tooltip on ring', () => {
+    const { container } = render(
+      <RingsProgress rings={[{ value: 50, color: 'cyan', tooltip: 'Half done' }]} />,
+      { wrapper: TestWrapper }
+    );
+    expect(container).toBeTruthy();
+  });
+
+  // Glow
+  it('renders with glow effect', () => {
+    const { container } = render(
+      <RingsProgress
+        glow
+        rings={[
+          { value: 50, color: 'green' },
+          { value: 80, color: 'blue' },
+        ]}
+      />,
+      { wrapper: TestWrapper }
+    );
+    expect(container).toBeTruthy();
+  });
+
+  it('renders with numeric glow intensity', () => {
+    const { container } = render(
+      <RingsProgress
+        glow={10}
+        rings={[{ value: 50, color: 'green', glowIntensity: 15, glowColor: 'red' }]}
+      />,
+      { wrapper: TestWrapper }
+    );
+    expect(container).toBeTruthy();
+  });
+
+  // Pulse on completion
+  it('renders with pulseOnComplete', () => {
+    const { container } = render(
+      <RingsProgress pulseOnComplete rings={[{ value: 100, color: 'green' }]} />,
+      { wrapper: TestWrapper }
+    );
+    expect(container).toBeTruthy();
+  });
+
+  // Start angle and direction
+  it('renders with custom startAngle', () => {
+    const { container } = render(
+      <RingsProgress startAngle={90} rings={[{ value: 50, color: 'cyan' }]} />,
+      { wrapper: TestWrapper }
+    );
+    expect(container).toBeTruthy();
+  });
+
+  it('renders with counterclockwise direction', () => {
+    const { container } = render(
+      <RingsProgress direction="counterclockwise" rings={[{ value: 50, color: 'cyan' }]} />,
+      { wrapper: TestWrapper }
+    );
+    expect(container).toBeTruthy();
   });
 });

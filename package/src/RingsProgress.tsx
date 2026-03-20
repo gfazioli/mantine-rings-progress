@@ -9,11 +9,13 @@ import {
   parseThemeColor,
   RingProgress,
   StylesApiProps,
+  Tooltip,
   useMantineTheme,
   useProps,
   useStyles,
   type MantineColor,
   type RingProgressProps,
+  type TooltipFloatingProps,
 } from '@mantine/core';
 import { useReducedMotion } from '@mantine/hooks';
 import classes from './RingsProgress.module.css';
@@ -30,11 +32,20 @@ export interface RingsProgressRing {
   /** Tooltip content displayed on hover */
   tooltip?: React.ReactNode;
 
+  /** Props for the Tooltip.Floating component wrapping this ring */
+  tooltipProps?: Omit<TooltipFloatingProps, 'label' | 'children'>;
+
   /** Override thickness for this specific ring */
   thickness?: number;
 
   /** Override roundCaps for this specific ring */
   roundCaps?: boolean;
+
+  /** Glow intensity (blur radius in px) for this ring, overrides global glow */
+  glowIntensity?: number;
+
+  /** Glow color for this ring, defaults to ring color */
+  glowColor?: MantineColor;
 
   /** Accessible label for this ring, defaults to "Ring {index}: {value}%" */
   ariaLabel?: string;
@@ -77,6 +88,21 @@ export interface RingsProgressProps
 
   /** Delay between each ring's entrance animation in ms, default: 0 (simultaneous) */
   staggerDelay?: number;
+
+  /** Default Tooltip.Floating props applied to all ring tooltips */
+  tooltipProps?: Omit<TooltipFloatingProps, 'label' | 'children'>;
+
+  /** Enable glow effect. true = default 6px blur, number = custom blur radius in px. Default: false */
+  glow?: boolean | number;
+
+  /** Trigger a pulse animation when a ring reaches 100%, default: false */
+  pulseOnComplete?: boolean;
+
+  /** Start angle in degrees (0 = 12 o'clock position), default: 0 */
+  startAngle?: number;
+
+  /** Ring fill direction, default: 'clockwise' */
+  direction?: 'clockwise' | 'counterclockwise';
 }
 
 export type RingsProgressFactory = Factory<{
@@ -95,6 +121,10 @@ const defaultProps: Partial<RingsProgressProps> = {
   transitionDuration: 0,
   rootColorAlpha: 0.15,
   staggerDelay: 0,
+  glow: false,
+  pulseOnComplete: false,
+  startAngle: 0,
+  direction: 'clockwise',
 };
 
 export const RingsProgress = factory<RingsProgressFactory>((_props, ref) => {
@@ -114,6 +144,11 @@ export const RingsProgress = factory<RingsProgressFactory>((_props, ref) => {
     transitionDuration,
     roundCaps,
     staggerDelay,
+    tooltipProps: globalTooltipProps,
+    glow,
+    pulseOnComplete,
+    startAngle,
+    direction,
     classNames,
     styles,
     unstyled,
@@ -148,11 +183,9 @@ export const RingsProgress = factory<RingsProgressFactory>((_props, ref) => {
       return;
     }
 
-    // Reset all rings to unmounted
     setMountedRings(rings.map(() => false));
     cleanupTimeouts();
 
-    // Stagger each ring's mount
     const delay = staggerDelay || 0;
     rings.forEach((_, index) => {
       const timeout = setTimeout(
@@ -168,7 +201,6 @@ export const RingsProgress = factory<RingsProgressFactory>((_props, ref) => {
       timeoutsRef.current.push(timeout);
     });
 
-    // If no stagger, use rAF for the initial paint-then-animate trick
     if (delay === 0) {
       cleanupTimeouts();
       requestAnimationFrame(() => {
@@ -179,8 +211,36 @@ export const RingsProgress = factory<RingsProgressFactory>((_props, ref) => {
     return cleanupTimeouts;
   }, [animate, reduceMotion, rings.length, staggerDelay]);
 
-  // During entrance animation, use transitionDuration (default 1000ms if animate is on but no explicit duration)
-  // After animation completes or when not animating, use transitionDuration as-is (default 0)
+  // Pulse on completion: track previous values to detect crossing 100%
+  const prevValuesRef = useRef<number[]>(rings.map((r) => r.value));
+  const [pulsingRings, setPulsingRings] = useState<boolean[]>(rings.map(() => false));
+
+  useEffect(() => {
+    if (!pulseOnComplete || reduceMotion) {
+      return;
+    }
+
+    const newPulsing = rings.map((ring, i) => {
+      const prev = prevValuesRef.current[i] ?? 0;
+      return ring.value >= 100 && prev < 100;
+    });
+
+    if (newPulsing.some(Boolean)) {
+      setPulsingRings(newPulsing);
+    }
+
+    prevValuesRef.current = rings.map((r) => r.value);
+  }, [rings.map((r) => r.value).join(','), pulseOnComplete, reduceMotion]);
+
+  const handleAnimationEnd = useCallback((index: number) => {
+    setPulsingRings((prev) => {
+      const next = [...prev];
+      next[index] = false;
+      return next;
+    });
+  }, []);
+
+  // Effective transition duration
   const allMounted = mountedRings.every(Boolean);
   const effectiveTransitionDuration = reduceMotion
     ? 0
@@ -197,6 +257,17 @@ export const RingsProgress = factory<RingsProgressFactory>((_props, ref) => {
     cumulativeOffset += ringThickness + gap;
   }
 
+  // Glow: resolve default blur
+  const glowBlur = glow === true ? 6 : typeof glow === 'number' ? glow : 0;
+
+  // SVG transform for startAngle and direction
+  // Mantine's RingProgress CSS applies rotate(-90deg) to start at 12 o'clock.
+  // We must include that base rotation when overriding the transform.
+  const svgTransform =
+    startAngle !== 0 || direction === 'counterclockwise'
+      ? `rotate(${-90 + startAngle}deg)${direction === 'counterclockwise' ? ' scaleX(-1)' : ''}`
+      : undefined;
+
   return (
     <Box
       ref={ref}
@@ -210,6 +281,9 @@ export const RingsProgress = factory<RingsProgressFactory>((_props, ref) => {
           thickness: ringThicknessOverride,
           roundCaps: ringRoundCapsOverride,
           ariaLabel: ringAriaLabelOverride,
+          tooltipProps: ringTooltipProps,
+          glowIntensity,
+          glowColor,
           ...ringSection
         } = ring;
 
@@ -220,7 +294,21 @@ export const RingsProgress = factory<RingsProgressFactory>((_props, ref) => {
         const ringAriaLabel =
           ringAriaLabelOverride ?? `Ring ${index + 1}: ${Math.round(ring.value)}%`;
 
-        return (
+        // Glow: per-ring override or global
+        const ringGlowBlur = glowIntensity ?? glowBlur;
+        const ringGlowColor = glowColor
+          ? parseThemeColor({ color: glowColor, theme }).value
+          : parsedColor.value;
+
+        const glowFilter =
+          ringGlowBlur > 0 ? `drop-shadow(0 0 ${ringGlowBlur}px ${ringGlowColor})` : undefined;
+
+        // Strip tooltip from section — we handle it externally
+        const { tooltip: _tooltip, ...sectionWithoutTooltip } = ringSection;
+
+        const isPulsing = pulseOnComplete && pulsingRings[index];
+
+        const ringElement = (
           <RingProgress
             key={index}
             rootColor={alpha(parsedColor.value, rootColorAlpha)}
@@ -228,12 +316,22 @@ export const RingsProgress = factory<RingsProgressFactory>((_props, ref) => {
             thickness={ringThickness}
             roundCaps={ringRoundCaps}
             transitionDuration={effectiveTransitionDuration}
-            sections={[{ ...ringSection, value: effectiveValue }]}
+            sections={[{ ...sectionWithoutTooltip, value: effectiveValue }]}
             role="progressbar"
             aria-valuenow={Math.round(ring.value)}
             aria-valuemin={0}
             aria-valuemax={100}
             aria-label={ringAriaLabel}
+            styles={
+              glowFilter || svgTransform
+                ? {
+                    svg: {
+                      ...(glowFilter ? { filter: glowFilter } : {}),
+                      ...(svgTransform ? { transform: svgTransform } : {}),
+                    },
+                  }
+                : undefined
+            }
             {...getStyles('ring', {
               style: {
                 position: 'absolute',
@@ -241,8 +339,22 @@ export const RingsProgress = factory<RingsProgressFactory>((_props, ref) => {
                 left: offsets[index],
               },
             })}
+            data-pulsing={isPulsing || undefined}
+            onAnimationEnd={isPulsing ? () => handleAnimationEnd(index) : undefined}
           />
         );
+
+        // Wrap in tooltip if needed
+        if (ring.tooltip != null) {
+          const mergedTooltipProps = { ...globalTooltipProps, ...ringTooltipProps };
+          return (
+            <Tooltip.Floating key={index} label={ring.tooltip} {...mergedTooltipProps}>
+              {ringElement}
+            </Tooltip.Floating>
+          );
+        }
+
+        return ringElement;
       })}
       {label && <Box {...getStyles('label')}>{label}</Box>}
     </Box>

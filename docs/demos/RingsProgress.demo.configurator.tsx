@@ -115,6 +115,22 @@ export const configurator: MantineDemo = {
       libraryValue: 0,
     },
     {
+      prop: 'startAngle',
+      type: 'number',
+      min: 0,
+      max: 360,
+      step: 15,
+      initialValue: 0,
+      libraryValue: 0,
+    },
+    {
+      prop: 'direction',
+      type: 'select',
+      data: ['clockwise', 'counterclockwise'],
+      initialValue: 'clockwise',
+      libraryValue: 'clockwise',
+    },
+    {
       prop: 'label',
       type: 'string',
       initialValue: '',
