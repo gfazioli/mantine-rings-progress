@@ -5,5 +5,6 @@ export { glow } from './RingsProgress.demo.glow';
 export { label } from './RingsProgress.demo.label';
 export { labels } from './RingsProgress.demo.labels';
 export { perring } from './RingsProgress.demo.perring';
+export { pulse } from './RingsProgress.demo.pulse';
 export { stagger } from './RingsProgress.demo.stagger';
 export { tooltips } from './RingsProgress.demo.tooltips';

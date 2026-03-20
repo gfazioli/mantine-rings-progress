@@ -115,6 +115,15 @@ export const configurator: MantineDemo = {
       libraryValue: 0,
     },
     {
+      prop: 'glow',
+      type: 'number',
+      min: 0,
+      max: 30,
+      step: 1,
+      initialValue: 0,
+      libraryValue: 0,
+    },
+    {
       prop: 'startAngle',
       type: 'number',
       min: 0,
