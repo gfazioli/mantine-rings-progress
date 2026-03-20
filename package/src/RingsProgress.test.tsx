@@ -274,4 +274,19 @@ describe('RingsProgress', () => {
     );
     expect(container).toBeTruthy();
   });
+
+  // Unified tooltip
+  it('renders with withTooltip', () => {
+    const { container } = render(
+      <RingsProgress
+        withTooltip
+        rings={[
+          { value: 50, color: 'green', tooltip: 'Move' },
+          { value: 80, color: 'blue' },
+        ]}
+      />,
+      { wrapper: TestWrapper }
+    );
+    expect(container).toBeTruthy();
+  });
 });
