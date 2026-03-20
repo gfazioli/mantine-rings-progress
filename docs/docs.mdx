@@ -61,9 +61,9 @@ Use `startAngle` (in degrees) to change where rings start filling from — `0` i
 
 <Demo data={demos.direction} />
 
-## Tooltip Props
+## Tooltip
 
-Each ring supports a `tooltip` prop for hover content. You can customize the tooltip appearance and behavior with `tooltipProps` per-ring or globally on the component (e.g., `position`, `color`, `offset`). The tooltip is rendered using Mantine's `Tooltip.Floating`.
+Set `withTooltip` to display a unified tooltip on hover showing all rings info. Each ring's `tooltip` prop defines the content — if omitted, the ring value percentage is shown. The tooltip displays a color swatch next to each entry. You can customize the tooltip with `tooltipProps`.
 
 <Demo data={demos.tooltips} />
 

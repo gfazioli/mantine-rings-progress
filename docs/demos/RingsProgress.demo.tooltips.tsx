@@ -15,6 +15,7 @@ function Wrapper() {
         <RingsProgress
           size={140}
           rings={rings}
+          withTooltip
           label={
             <ActionIcon color="yellow" variant="filled" radius="xl" size="xl">
               <IconCheck style={{ width: rem(22), height: rem(22) }} />
@@ -39,6 +40,7 @@ function Demo() {
     <RingsProgress
       size={140}
       rings={rings}
+      withTooltip
       label={
         <ActionIcon color="yellow" variant="filled" radius="xl" size="xl">
           <IconCheck style={{ width: rem(22), height: rem(22) }} />
