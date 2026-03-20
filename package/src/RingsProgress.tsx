@@ -3,12 +3,16 @@ import {
   alpha,
   Box,
   BoxProps,
+  ColorSwatch,
   ElementProps,
   Factory,
   factory,
+  Group,
   parseThemeColor,
   RingProgress,
+  Stack,
   StylesApiProps,
+  Text,
   Tooltip,
   useMantineTheme,
   useProps,
@@ -109,6 +113,9 @@ export interface RingsProgressProps
 
   /** Callback fired when a ring value reaches 100% */
   onRingComplete?: (index: number, ring: RingsProgressRing) => void;
+
+  /** Show a unified tooltip with all rings info on hover, default: false */
+  withTooltip?: boolean;
 }
 
 export type RingsProgressFactory = Factory<{
@@ -131,6 +138,7 @@ const defaultProps: Partial<RingsProgressProps> = {
   pulseOnComplete: false,
   startAngle: 0,
   direction: 'clockwise',
+  withTooltip: false,
 };
 
 export const RingsProgress = factory<RingsProgressFactory>((_props, ref) => {
@@ -156,6 +164,7 @@ export const RingsProgress = factory<RingsProgressFactory>((_props, ref) => {
     startAngle,
     direction,
     onRingComplete,
+    withTooltip,
     classNames,
     styles,
     unstyled,
@@ -283,7 +292,7 @@ export const RingsProgress = factory<RingsProgressFactory>((_props, ref) => {
       ? `rotate(${-90 + startAngle}deg)${direction === 'counterclockwise' ? ' scaleX(-1)' : ''}`
       : undefined;
 
-  return (
+  const content = (
     <Box
       ref={ref}
       {...getStyles('root', { style: { width: size, height: size } })}
@@ -319,12 +328,12 @@ export const RingsProgress = factory<RingsProgressFactory>((_props, ref) => {
         const glowFilter =
           ringGlowBlur > 0 ? `drop-shadow(0 0 ${ringGlowBlur}px ${ringGlowColor})` : undefined;
 
-        // Strip tooltip from section — we handle it externally
+        // Strip tooltip from section passed to RingProgress
         const { tooltip: _tooltip, ...sectionWithoutTooltip } = ringSection;
 
         const isPulsing = pulseOnComplete && pulsingRings[index];
 
-        const ringElement = (
+        return (
           <RingProgress
             key={index}
             rootColor={
@@ -363,22 +372,39 @@ export const RingsProgress = factory<RingsProgressFactory>((_props, ref) => {
             onAnimationEnd={isPulsing ? () => handleAnimationEnd(index) : undefined}
           />
         );
-
-        // Wrap in tooltip if needed
-        if (ring.tooltip != null) {
-          const mergedTooltipProps = { ...globalTooltipProps, ...ringTooltipProps };
-          return (
-            <Tooltip.Floating key={index} label={ring.tooltip} {...mergedTooltipProps}>
-              {ringElement}
-            </Tooltip.Floating>
-          );
-        }
-
-        return ringElement;
       })}
       {label && <Box {...getStyles('label')}>{label}</Box>}
     </Box>
   );
+
+  if (withTooltip) {
+    const tooltipLabel = (
+      <Stack gap={4}>
+        {rings.map((ring, index) => {
+          const parsedColor = parseThemeColor({ color: ring.color, theme });
+          const tooltipContent = ring.tooltip ?? `${Math.round(ring.value)}%`;
+          return (
+            <Group key={index} gap="xs" wrap="nowrap">
+              <ColorSwatch color={parsedColor.value} size={12} withShadow={false} />
+              {typeof tooltipContent === 'string' ? (
+                <Text size="xs">{tooltipContent}</Text>
+              ) : (
+                tooltipContent
+              )}
+            </Group>
+          );
+        })}
+      </Stack>
+    );
+
+    return (
+      <Tooltip.Floating label={tooltipLabel} {...globalTooltipProps}>
+        {content}
+      </Tooltip.Floating>
+    );
+  }
+
+  return content;
 });
 
 RingsProgress.classes = classes;
