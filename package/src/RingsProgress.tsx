@@ -54,7 +54,7 @@ export interface RingsProgressRing {
 export type RingsProgressStylesNames = 'root' | 'ring' | 'label';
 
 export type RingsProgressCssVariables = {
-  root: '--rp-size';
+  root: '--rp-transition-duration';
 };
 
 export interface RingsProgressProps
