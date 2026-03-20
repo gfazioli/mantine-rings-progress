@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
   alpha,
   Box,
@@ -33,11 +33,8 @@ export interface RingsProgressRing {
   /** Ring color, key of theme.colors or CSS color value */
   color: MantineColor;
 
-  /** Tooltip content displayed on hover */
+  /** Tooltip content displayed when withTooltip is enabled */
   tooltip?: React.ReactNode;
-
-  /** Props for the Tooltip.Floating component wrapping this ring */
-  tooltipProps?: Omit<TooltipFloatingProps, 'label' | 'children'>;
 
   /** Override thickness for this specific ring */
   thickness?: number;
@@ -230,7 +227,7 @@ export const RingsProgress = factory<RingsProgressFactory>((_props, ref) => {
   // Pulse on completion: track previous values to detect crossing 100%
   const prevValuesRef = useRef<number[]>(rings.map((r) => r.value));
   const [pulsingRings, setPulsingRings] = useState<boolean[]>(rings.map(() => false));
-  const ringValuesKey = useMemo(() => rings.map((r) => r.value).join(','), [rings]);
+  const ringValuesKey = rings.map((r) => r.value).join(',');
 
   useEffect(() => {
     const currentValues = rings.map((r) => r.value);
@@ -305,7 +302,6 @@ export const RingsProgress = factory<RingsProgressFactory>((_props, ref) => {
           thickness: ringThicknessOverride,
           roundCaps: ringRoundCapsOverride,
           ariaLabel: ringAriaLabelOverride,
-          tooltipProps: ringTooltipProps,
           glowIntensity,
           glowColor,
           rootColor: ringRootColor,
