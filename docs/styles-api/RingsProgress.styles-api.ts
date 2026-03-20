@@ -10,7 +10,8 @@ export const RingsProgressStylesApi: StylesApiData<RingsProgressFactory> = {
 
   vars: {
     root: {
-      '--rp-transition-duration': 'Transition duration for entrance animation and value changes',
+      '--rp-transition-duration':
+        'Transition duration applied internally to each ring for entrance animation and value changes (controlled via `transitionDuration` prop)',
     },
   },
 
