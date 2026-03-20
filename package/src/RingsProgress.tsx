@@ -196,26 +196,24 @@ export const RingsProgress = factory<RingsProgressFactory>((_props, ref) => {
       return;
     }
 
+    // Reset all rings to unmounted
     setMountedRings(rings.map(() => false));
     cleanupTimeouts();
 
-    const delay = staggerDelay || 0;
-    rings.forEach((_, index) => {
-      const timeout = setTimeout(
-        () => {
+    if (staggerDelay && staggerDelay > 0) {
+      // Staggered: each ring mounts after incremental delay
+      rings.forEach((_, index) => {
+        const timeout = setTimeout(() => {
           setMountedRings((prev) => {
             const next = [...prev];
             next[index] = true;
             return next;
           });
-        },
-        delay > 0 ? index * delay : 0
-      );
-      timeoutsRef.current.push(timeout);
-    });
-
-    if (delay === 0) {
-      cleanupTimeouts();
+        }, index * staggerDelay);
+        timeoutsRef.current.push(timeout);
+      });
+    } else {
+      // Simultaneous: paint with value=0, then mount all in next frame
       requestAnimationFrame(() => {
         setMountedRings(rings.map(() => true));
       });
@@ -228,6 +226,12 @@ export const RingsProgress = factory<RingsProgressFactory>((_props, ref) => {
   const prevValuesRef = useRef<number[]>(rings.map((r) => r.value));
   const [pulsingRings, setPulsingRings] = useState<boolean[]>(rings.map(() => false));
   const ringValuesKey = rings.map((r) => r.value).join(',');
+
+  // Reset pulse tracking when ring count changes
+  useEffect(() => {
+    prevValuesRef.current = rings.map((r) => r.value);
+    setPulsingRings(rings.map(() => false));
+  }, [rings.length]);
 
   useEffect(() => {
     const currentValues = rings.map((r) => r.value);
@@ -251,7 +255,7 @@ export const RingsProgress = factory<RingsProgressFactory>((_props, ref) => {
     }
 
     prevValuesRef.current = currentValues;
-  }, [ringValuesKey, pulseOnComplete, reduceMotion, onRingComplete]);
+  }, [ringValuesKey, pulseOnComplete, reduceMotion, onRingComplete, rings]);
 
   const handleAnimationEnd = useCallback((index: number) => {
     setPulsingRings((prev) => {

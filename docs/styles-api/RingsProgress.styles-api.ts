@@ -11,7 +11,7 @@ export const RingsProgressStylesApi: StylesApiData<RingsProgressFactory> = {
   vars: {
     root: {
       '--rp-transition-duration':
-        'Transition duration applied internally to each ring for entrance animation and value changes (controlled via `transitionDuration` prop)',
+        'Set internally on each `RingProgress` child by the `transitionDuration` prop — not directly customizable via CSS',
     },
   },
 

@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-`@gfazioli/mantine-rings-progress` is a Mantine UI extension that renders multiple concentric ring progress indicators. It wraps a custom fork of `RingProgress` (with animation support) inside a `RingsProgress` component that stacks rings with configurable gap, thickness, and root color alpha.
+`@gfazioli/mantine-rings-progress` is a Mantine UI extension that renders multiple concentric ring progress indicators — inspired by Apple Watch activity rings. It uses the native `RingProgress` from `@mantine/core` and wraps multiple instances inside a `RingsProgress` component with configurable gap, thickness, per-ring customization, animations, glow effects, and accessibility.
 
 ## Commands
 
@@ -30,13 +30,10 @@ This repo uses **yarn workspaces** with two packages: `docs` (Next.js documentat
 
 ### Component Structure
 
-The package exports a single main component `RingsProgress` which internally uses a forked `RingProgress`:
+The package exports a single main component `RingsProgress` which uses the native Mantine `RingProgress`:
 
-- **`package/src/RingsProgress.tsx`** — Main component. Uses Mantine's `factory()` pattern. Takes a `rings` array and renders multiple `RingProgress` instances with decreasing sizes and positional offsets to create concentric rings.
-- **`package/src/RingProgress/`** — Forked from Mantine's `RingProgress` with added animation support (`animate`, `animationDuration`, `animationSteps`, `animationTimingFunction`). This is NOT the standard Mantine component.
-  - `RingProgress.tsx` — SVG-based ring with easing animation via `setInterval`
-  - `Curve/` — SVG circle arc rendering and prop calculation
-  - `get-curves/` — Logic for computing curve data from sections
+- **`package/src/RingsProgress.tsx`** — Main component. Uses Mantine's `factory()` pattern. Takes a `rings` array and renders multiple native `RingProgress` instances (from `@mantine/core`) with decreasing sizes and positional offsets to create concentric rings.
+- **`package/src/RingsProgress.module.css`** — Styles for root positioning, label centering, and pulse animation keyframes.
 
 ### Build Pipeline
 
@@ -44,10 +41,13 @@ Rollup builds both ESM (`.mjs`) and CJS (`.cjs`) outputs. CSS modules use `hash-
 
 ### Testing
 
-Jest with `jsdom` environment, `esbuild-jest` for TypeScript transforms, `identity-obj-proxy` for CSS modules. Tests use `@mantine-tests/core` and `@testing-library/react`.
+Jest with `jsdom` environment, `esbuild-jest` for TypeScript transforms, `identity-obj-proxy` for CSS modules. Tests use `@testing-library/react` with `MantineProvider` wrapper.
 
 ### Key Patterns
 
 - Components use Mantine's `factory()` / `useProps()` / `useStyles()` API for consistent theming and styles API support.
-- The `RingsProgress` component positions inner rings absolutely; each ring's size shrinks by `(thickness + gap) * 2` per nesting level.
-- CSS module files: `RingsProgress.module.css` (outer), `RingProgress.module.css` (inner).
+- The `RingsProgress` component positions inner rings absolutely; each ring's offset is computed cumulatively to support per-ring thickness.
+- Entrance animation uses `useState` + `requestAnimationFrame` (or staggered `setTimeout`) with CSS `transitionDuration` on the native `RingProgress`.
+- Glow effect via CSS `filter: drop-shadow()` on the SVG element.
+- Unified tooltip wraps the entire component with `Tooltip.Floating`.
+- Accessibility: `role="group"` on root, `role="progressbar"` with ARIA attributes on each ring, `useReducedMotion` support.
