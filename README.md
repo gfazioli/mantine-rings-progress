@@ -29,7 +29,7 @@ This component is created on top of the [Mantine](https://mantine.dev/) library.
 - **Glow / neon effect** — `drop-shadow` glow that follows the ring shape, with per-ring intensity and color
 - **Pulse on completion** — Subtle pulse animation when a ring reaches 100%, with `onRingComplete` callback
 - **Start angle & direction** — Customize where rings start filling and in which direction (clockwise/counterclockwise)
-- **Tooltip props** — Full control over `Tooltip.Floating` per-ring or globally
+- **Unified tooltip** — `withTooltip` shows a chart-like tooltip with color swatches for all rings
 - **Accessibility** — `role="progressbar"` with ARIA attributes on each ring, `prefers-reduced-motion` support
 - **Central label** — Display any React node (text, emoji, component) centered in the rings
 
