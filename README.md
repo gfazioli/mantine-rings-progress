@@ -3,7 +3,7 @@
 <img alt="Mantine Rings Progress" src="https://github.com/gfazioli/mantine-rings-progress/blob/master/logo.jpeg" />
 
 <div align="center">
-  
+
   [![NPM version](https://img.shields.io/npm/v/%40gfazioli%2Fmantine-rings-progress?style=for-the-badge)](https://www.npmjs.com/package/@gfazioli/mantine-rings-progress)
   [![NPM Downloads](https://img.shields.io/npm/dm/%40gfazioli%2Fmantine-rings-progress?style=for-the-badge)](https://www.npmjs.com/package/@gfazioli/mantine-rings-progress)
   [![NPM Downloads](https://img.shields.io/npm/dy/%40gfazioli%2Fmantine-rings-progress?style=for-the-badge&label=%20&color=f90)](https://www.npmjs.com/package/@gfazioli/mantine-rings-progress)
@@ -11,7 +11,7 @@
 
 ---
 
-[<kbd> <br/> ❤️ If this component has been useful to you or your team, please consider becoming a sponsor <br/> </kbd>](https://github.com/sponsors/gfazioli?o=esc)  
+[<kbd> <br/> ❤️ If this component has been useful to you or your team, please consider becoming a sponsor <br/> </kbd>](https://github.com/sponsors/gfazioli?o=esc)
 
 </div>
 
@@ -19,9 +19,19 @@
 
 This component is created on top of the [Mantine](https://mantine.dev/) library.
 
-[Mantine Rings Progress](https://gfazioli.github.io/mantine-rings-progress/) is a Mantine UI extension that enhances the RingProgress component to visualize multiple concurrent metrics as concentric rings in a single compact widget. Each ring is defined by a value and color, and the component accepts a richly customizable label—either plain text, emojis, or a fully composed React element—allowing you to present status or controls in the center. 
+[Mantine Rings Progress](https://gfazioli.github.io/mantine-rings-progress/) is a Mantine UI extension that renders multiple concentric ring progress indicators — inspired by the Apple Watch activity rings. Each ring is defined by a value and color, and the component wraps native Mantine `RingProgress` instances with rich customization options.
 
-The package includes stylesheet imports (standard or within a CSS layer) to align visuals with Mantine, and discourages inline tooltips because they interfere with label readability. Beyond static displays, it can power dynamic scenarios like a countdown timer, using separate rings to represent minutes, seconds, and hundredths, with configurable size and thickness to fit dashboards, monitors, or compact cards.
+### Features
+
+- **Per-ring customization** — Override `thickness` and `roundCaps` on individual rings
+- **Entrance animation** — Animate rings from 0 to their target values on mount
+- **Staggered animation** — Animate rings one after another with configurable delay
+- **Glow / neon effect** — `drop-shadow` glow that follows the ring shape, with per-ring intensity and color
+- **Pulse on completion** — Subtle pulse animation when a ring reaches 100%
+- **Start angle & direction** — Customize where rings start filling and in which direction (clockwise/counterclockwise)
+- **Tooltip props** — Full control over `Tooltip.Floating` per-ring or globally
+- **Accessibility** — `role="progressbar"` with ARIA attributes on each ring, `prefers-reduced-motion` support
+- **Central label** — Display any React node (text, emoji, component) centered in the rings
 
 > [!note]
 >
@@ -33,7 +43,7 @@ The package includes stylesheet imports (standard or within a CSS layer) to alig
 ```sh
 npm install @gfazioli/mantine-rings-progress
 ```
-or 
+or
 
 ```sh
 yarn add @gfazioli/mantine-rings-progress
@@ -51,19 +61,19 @@ import { RingsProgress } from '@gfazioli/mantine-rings-progress';
 
 function Demo() {
   const rings = [
-    { value: 20, color: 'green' },
-    { value: 80, color: 'blue' },
+    { value: 75, color: 'green' },
+    { value: 50, color: 'blue' },
+    { value: 90, color: 'orange' },
   ];
 
   return (
     <RingsProgress
-      size={140}
+      size={180}
       rings={rings}
-      label={
-        <ActionIcon color="yellow" variant="filled" radius="xl" size="xl">
-          <IconCheck style={{ width: rem(22), height: rem(22) }} />
-        </ActionIcon>
-      }
+      animate
+      staggerDelay={300}
+      transitionDuration={1000}
+      glow={6}
     />
   );
 }
@@ -72,16 +82,16 @@ function Demo() {
 
 <div align="center">
 
-[<kbd> <br/> ❤️ If this component has been useful to you or your team, please consider becoming a sponsor <br/> </kbd>](https://github.com/sponsors/gfazioli?o=esc)
+[<kbd> <br/> ❤️ If this component has been useful to you or your team, please consider becoming a sponsor <br/> </kbd>](https://github.com/sponsors/gfazioli?o=esc)
 
 </div>
 
 Your support helps me:
 
-- Keep the project actively maintained with timely bug fixes and security updates	
-- Add new features, improve performance, and refine the developer experience	
-- Expand test coverage and documentation for smoother adoption	
-- Ensure long‑term sustainability without relying on ad hoc free time	
+- Keep the project actively maintained with timely bug fixes and security updates
+- Add new features, improve performance, and refine the developer experience
+- Expand test coverage and documentation for smoother adoption
+- Ensure long‑term sustainability without relying on ad hoc free time
 - Prioritize community requests and roadmap items that matter most
 
 Open source thrives when those who benefit can give back—even a small monthly contribution makes a real difference. Sponsorships help cover maintenance time, infrastructure, and the countless invisible tasks that keep a project healthy.

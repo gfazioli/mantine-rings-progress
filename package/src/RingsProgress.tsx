@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   alpha,
   Box,
@@ -214,23 +214,25 @@ export const RingsProgress = factory<RingsProgressFactory>((_props, ref) => {
   // Pulse on completion: track previous values to detect crossing 100%
   const prevValuesRef = useRef<number[]>(rings.map((r) => r.value));
   const [pulsingRings, setPulsingRings] = useState<boolean[]>(rings.map(() => false));
+  const ringValuesKey = useMemo(() => rings.map((r) => r.value).join(','), [rings]);
 
   useEffect(() => {
     if (!pulseOnComplete || reduceMotion) {
       return;
     }
 
-    const newPulsing = rings.map((ring, i) => {
+    const currentValues = rings.map((r) => r.value);
+    const newPulsing = currentValues.map((value, i) => {
       const prev = prevValuesRef.current[i] ?? 0;
-      return ring.value >= 100 && prev < 100;
+      return value >= 100 && prev < 100;
     });
 
     if (newPulsing.some(Boolean)) {
       setPulsingRings(newPulsing);
     }
 
-    prevValuesRef.current = rings.map((r) => r.value);
-  }, [rings.map((r) => r.value).join(','), pulseOnComplete, reduceMotion]);
+    prevValuesRef.current = currentValues;
+  }, [ringValuesKey, pulseOnComplete, reduceMotion]);
 
   const handleAnimationEnd = useCallback((index: number) => {
     setPulsingRings((prev) => {
