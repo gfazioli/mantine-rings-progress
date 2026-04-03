@@ -302,7 +302,9 @@ export const RingsProgress = factory<RingsProgressFactory>((_props) => {
       {...getStyles('root', { style: { width: size, height: size } })}
       {...others}
       role={others.role ?? 'group'}
-      aria-label={others['aria-label'] ?? 'Progress rings'}
+      aria-label={
+        others['aria-label'] ?? (others['aria-labelledby'] ? undefined : 'Progress rings')
+      }
     >
       {rings.map((ring, index) => {
         const {
