@@ -229,11 +229,13 @@ export const RingsProgress = factory<RingsProgressFactory>((_props) => {
   const [pulsingRings, setPulsingRings] = useState<boolean[]>(rings.map(() => false));
   const ringValuesKey = rings.map((r) => r.value).join(',');
 
-  // Reset pulse tracking when rings change
+  // Reset pulse tracking when ring count changes
+  const ringCount = rings.length;
   useEffect(() => {
     prevValuesRef.current = rings.map((r) => r.value);
     setPulsingRings(rings.map(() => false));
-  }, [rings]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- only reset on count change, not value change
+  }, [ringCount]);
 
   useEffect(() => {
     const currentValues = rings.map((r) => r.value);
