@@ -18,6 +18,7 @@
 ## Overview
 
 This component is created on top of the [Mantine](https://mantine.dev/) library.
+It requires **Mantine 9.x** and **React 19**.
 
 [Mantine Rings Progress](https://gfazioli.github.io/mantine-rings-progress/) is a Mantine UI extension that renders multiple concentric ring progress indicators — inspired by the Apple Watch activity rings. Each ring is defined by a value and color, and the component wraps native Mantine `RingProgress` instances with rich customization options.
 
