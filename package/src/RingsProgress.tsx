@@ -191,18 +191,20 @@ export const RingsProgress = factory<RingsProgressFactory>((_props) => {
   }, []);
 
   useEffect(() => {
+    const ringCount = rings.length;
+
     if (!animate || reduceMotion) {
-      setMountedRings(rings.map(() => true));
+      setMountedRings(Array.from({ length: ringCount }, () => true));
       return;
     }
 
     // Reset all rings to unmounted
-    setMountedRings(rings.map(() => false));
+    setMountedRings(Array.from({ length: ringCount }, () => false));
     cleanupTimeouts();
 
     if (staggerDelay && staggerDelay > 0) {
       // Staggered: each ring mounts after incremental delay
-      rings.forEach((_, index) => {
+      for (let index = 0; index < ringCount; index++) {
         const timeout = setTimeout(() => {
           setMountedRings((prev) => {
             const next = [...prev];
@@ -211,27 +213,27 @@ export const RingsProgress = factory<RingsProgressFactory>((_props) => {
           });
         }, index * staggerDelay);
         timeoutsRef.current.push(timeout);
-      });
+      }
     } else {
       // Simultaneous: paint with value=0, then mount all in next frame
       requestAnimationFrame(() => {
-        setMountedRings(rings.map(() => true));
+        setMountedRings(Array.from({ length: ringCount }, () => true));
       });
     }
 
     return cleanupTimeouts;
-  }, [animate, reduceMotion, rings.length, staggerDelay]);
+  }, [animate, reduceMotion, rings, staggerDelay, cleanupTimeouts]);
 
   // Pulse on completion: track previous values to detect crossing 100%
   const prevValuesRef = useRef<number[]>(rings.map((r) => r.value));
   const [pulsingRings, setPulsingRings] = useState<boolean[]>(rings.map(() => false));
   const ringValuesKey = rings.map((r) => r.value).join(',');
 
-  // Reset pulse tracking when ring count changes
+  // Reset pulse tracking when rings change
   useEffect(() => {
     prevValuesRef.current = rings.map((r) => r.value);
     setPulsingRings(rings.map(() => false));
-  }, [rings.length]);
+  }, [rings]);
 
   useEffect(() => {
     const currentValues = rings.map((r) => r.value);
