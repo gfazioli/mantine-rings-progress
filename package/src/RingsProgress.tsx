@@ -138,7 +138,7 @@ const defaultProps: Partial<RingsProgressProps> = {
   withTooltip: false,
 };
 
-export const RingsProgress = factory<RingsProgressFactory>((_props, ref) => {
+export const RingsProgress = factory<RingsProgressFactory>((_props) => {
   const theme = useMantineTheme();
   const reduceMotion = useReducedMotion();
 
@@ -279,7 +279,7 @@ export const RingsProgress = factory<RingsProgressFactory>((_props, ref) => {
   for (let i = 0; i < rings.length; i++) {
     offsets.push(cumulativeOffset);
     const ringThickness = rings[i].thickness ?? thickness;
-    cumulativeOffset += ringThickness + gap;
+    cumulativeOffset += (ringThickness ?? 0) + (gap ?? 0);
   }
 
   // Glow: resolve default blur
@@ -290,16 +290,15 @@ export const RingsProgress = factory<RingsProgressFactory>((_props, ref) => {
   // We must include that base rotation when overriding the transform.
   const svgTransform =
     startAngle !== 0 || direction === 'counterclockwise'
-      ? `rotate(${-90 + startAngle}deg)${direction === 'counterclockwise' ? ' scaleX(-1)' : ''}`
+      ? `rotate(${-90 + (startAngle ?? 0)}deg)${direction === 'counterclockwise' ? ' scaleX(-1)' : ''}`
       : undefined;
 
   const content = (
     <Box
-      ref={ref}
       {...getStyles('root', { style: { width: size, height: size } })}
-      role="group"
-      aria-label="Progress rings"
       {...others}
+      role={others.role ?? 'group'}
+      aria-label={others['aria-label'] ?? 'Progress rings'}
     >
       {rings.map((ring, index) => {
         const {
@@ -339,9 +338,9 @@ export const RingsProgress = factory<RingsProgressFactory>((_props, ref) => {
             rootColor={
               ringRootColor
                 ? parseThemeColor({ color: ringRootColor, theme }).value
-                : alpha(parsedColor.value, rootColorAlpha)
+                : alpha(parsedColor.value, rootColorAlpha ?? 0.1)
             }
-            size={size - offsets[index] * 2}
+            size={(size ?? 0) - offsets[index] * 2}
             thickness={ringThickness}
             roundCaps={ringRoundCaps}
             transitionDuration={effectiveTransitionDuration}
