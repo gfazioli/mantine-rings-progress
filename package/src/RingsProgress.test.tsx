@@ -289,4 +289,30 @@ describe('RingsProgress', () => {
     );
     expect(container).toBeTruthy();
   });
+
+  // Regression for #18: a parent re-render with an equivalent rings array
+  // (same length, same values, new reference) must not fire onRingComplete again.
+  it('does not re-fire onRingComplete when rings reference changes but values are unchanged', () => {
+    const onRingComplete = jest.fn();
+    function Harness({ revision }: { revision: number }) {
+      // New reference on every render via the inline literal.
+      return (
+        <RingsProgress
+          onRingComplete={onRingComplete}
+          rings={[
+            { value: 100, color: 'green' },
+            { value: 50, color: 'blue' },
+          ]}
+          data-revision={revision}
+        />
+      );
+    }
+    const { rerender } = render(<Harness revision={0} />, { wrapper: TestWrapper });
+    onRingComplete.mockClear();
+
+    rerender(<Harness revision={1} />);
+    rerender(<Harness revision={2} />);
+
+    expect(onRingComplete).not.toHaveBeenCalled();
+  });
 });

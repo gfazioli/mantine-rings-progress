@@ -179,6 +179,13 @@ export const RingsProgress = factory<RingsProgressFactory>((_props) => {
     vars,
   });
 
+  // Mirror the rings array into a ref so effects can access the latest items without
+  // listing the unstable `rings` reference in their dependency arrays. The ref is
+  // refreshed on every render, which is cheap and side-effect-free.
+  const ringsRef = useRef(rings);
+  ringsRef.current = rings;
+  const ringCount = rings.length;
+
   // Staggered entrance animation state
   const [mountedRings, setMountedRings] = useState<boolean[]>(() =>
     rings.map(() => !animate || reduceMotion)
@@ -191,8 +198,6 @@ export const RingsProgress = factory<RingsProgressFactory>((_props) => {
   }, []);
 
   useEffect(() => {
-    const ringCount = rings.length;
-
     if (!animate || reduceMotion) {
       setMountedRings(Array.from({ length: ringCount }, () => true));
       return;
@@ -222,23 +227,24 @@ export const RingsProgress = factory<RingsProgressFactory>((_props) => {
     }
 
     return cleanupTimeouts;
-  }, [animate, reduceMotion, rings, staggerDelay, cleanupTimeouts]);
+  }, [animate, reduceMotion, ringCount, staggerDelay, cleanupTimeouts]);
 
   // Pulse on completion: track previous values to detect crossing 100%
   const prevValuesRef = useRef<number[]>(rings.map((r) => r.value));
   const [pulsingRings, setPulsingRings] = useState<boolean[]>(rings.map(() => false));
   const ringValuesKey = rings.map((r) => r.value).join(',');
 
-  // Reset pulse tracking when ring count changes
-  const ringCount = rings.length;
+  // Reset pulse tracking when ring count changes (reads ringsRef so values stay current
+  // without re-running on every render).
   useEffect(() => {
-    prevValuesRef.current = rings.map((r) => r.value);
-    setPulsingRings(rings.map(() => false));
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- only reset on count change, not value change
+    const current = ringsRef.current;
+    prevValuesRef.current = current.map((r) => r.value);
+    setPulsingRings(current.map(() => false));
   }, [ringCount]);
 
   useEffect(() => {
-    const currentValues = rings.map((r) => r.value);
+    const current = ringsRef.current;
+    const currentValues = current.map((r) => r.value);
     const crossedComplete = currentValues.map((value, i) => {
       const prev = prevValuesRef.current[i] ?? 0;
       return value >= 100 && prev < 100;
@@ -248,7 +254,7 @@ export const RingsProgress = factory<RingsProgressFactory>((_props) => {
     if (onRingComplete) {
       crossedComplete.forEach((crossed, i) => {
         if (crossed) {
-          onRingComplete(i, rings[i]);
+          onRingComplete(i, current[i]);
         }
       });
     }
@@ -259,7 +265,7 @@ export const RingsProgress = factory<RingsProgressFactory>((_props) => {
     }
 
     prevValuesRef.current = currentValues;
-  }, [ringValuesKey, pulseOnComplete, reduceMotion, onRingComplete, rings]);
+  }, [ringValuesKey, pulseOnComplete, reduceMotion, onRingComplete]);
 
   const handleAnimationEnd = useCallback((index: number) => {
     setPulsingRings((prev) => {
