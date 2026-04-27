@@ -1,4 +1,3 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
   alpha,
   Box,
@@ -22,6 +21,7 @@ import {
   type TooltipFloatingProps,
 } from '@mantine/core';
 import { useReducedMotion } from '@mantine/hooks';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import classes from './RingsProgress.module.css';
 
 export type RingProgressSection = RingProgressProps['sections'][number];

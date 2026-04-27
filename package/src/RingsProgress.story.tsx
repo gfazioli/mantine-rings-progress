@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
-import { IconCheck } from '@tabler/icons-react';
 import { ActionIcon, Button, rem, Slider, Stack } from '@mantine/core';
+import { IconCheck } from '@tabler/icons-react';
+import React, { useState } from 'react';
 import { RingsProgress } from './RingsProgress';
 
 export default {
