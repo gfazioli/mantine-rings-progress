@@ -67,6 +67,27 @@ Set `withTooltip` to display a unified tooltip on hover showing all rings info. 
 
 <Demo data={demos.tooltips} />
 
+## Interactive rings
+
+Each ring accepts optional `onClick` and `onHover` callbacks. When `onClick` is provided the ring is keyboard-focusable (Enter and Space activate it), the cursor switches to pointer when the ring is under it, and the ring is exposed to assistive tech as a `role="button"`. `onHover` fires on both pointer enter and leave with a third boolean argument so consumers can react to either edge.
+
+```tsx
+<RingsProgress
+  rings={[
+    {
+      value: 75,
+      color: 'blue',
+      onClick: (ring, index) => showDetail(index),
+      onHover: (ring, index, hovered) => highlight(hovered ? index : null),
+    },
+  ]}
+/>
+```
+
+> Internally `RingsProgress` does **geometric hit-testing**: it measures the cursor's radial distance from the centre and matches it against each ring's stroke band. This sidesteps the issue that each ring's underlying SVG sits inside a rectangular wrapper that overlaps the inner rings, so a click on the outer ring's curve always lands on the right callback.
+
+<Demo data={demos.interactive} />
+
 ## Accessibility
 
 The component renders with `role="group"` and each ring has `role="progressbar"` with proper `aria-valuenow`, `aria-valuemin`, and `aria-valuemax` attributes. You can customize the accessible label with `aria-label` on the component or `ariaLabel` per-ring.

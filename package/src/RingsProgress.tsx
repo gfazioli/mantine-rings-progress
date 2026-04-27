@@ -53,6 +53,12 @@ export interface RingsProgressRing {
 
   /** Accessible label for this ring, defaults to "Ring {index}: {value}%" */
   ariaLabel?: string;
+
+  /** Called when the ring is clicked. The ring becomes keyboard-focusable (Enter/Space activates it) and the cursor switches to pointer. */
+  onClick?: (ring: RingsProgressRing, index: number) => void;
+
+  /** Called on pointer enter and leave. Receives `hovered` so consumers can react to both edges of the hover. */
+  onHover?: (ring: RingsProgressRing, index: number, hovered: boolean) => void;
 }
 
 export type RingsProgressStylesNames = 'root' | 'ring' | 'label';
@@ -292,6 +298,91 @@ export const RingsProgress = factory<RingsProgressFactory>((_props) => {
     cumulativeOffset += (ringThickness ?? 0) + (gap ?? 0);
   }
 
+  // Per-ring hit testing for click and hover (#19): each ring's wrapper rectangle
+  // overlaps the inner rings, so DOM hit-testing always lands on the topmost ring.
+  // Instead, we attach a single set of handlers to the outer container and resolve
+  // the actual ring from the cursor's radial distance to the centre.
+  const hasInteractive = rings.some((r) => r.onClick || r.onHover);
+  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+  const hoveredIndexRef = useRef<number | null>(null);
+  hoveredIndexRef.current = hoveredIndex;
+
+  const ringAtPoint = useCallback(
+    (clientX: number, clientY: number, rect: DOMRect): number | null => {
+      const cx = rect.left + rect.width / 2;
+      const cy = rect.top + rect.height / 2;
+      const r = Math.hypot(clientX - cx, clientY - cy);
+      const current = ringsRef.current;
+      for (let i = 0; i < current.length; i++) {
+        const t = current[i].thickness ?? thickness ?? 12;
+        const ringSize = (size ?? 120) - offsets[i] * 2;
+        const centerR = (ringSize - t) / 2;
+        if (Math.abs(r - centerR) <= t / 2) {
+          return i;
+        }
+      }
+      return null;
+    },
+    // offsets is recomputed every render; capture by closure rather than listing it
+    // (size/thickness are stable refs through props).
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [size, thickness, ringCount]
+  );
+
+  const handleContainerClick = useCallback(
+    (event: React.MouseEvent<HTMLDivElement>) => {
+      if (!hasInteractive) {
+        return;
+      }
+      const rect = event.currentTarget.getBoundingClientRect();
+      const idx = ringAtPoint(event.clientX, event.clientY, rect);
+      if (idx === null) {
+        return;
+      }
+      const ring = ringsRef.current[idx];
+      ring.onClick?.(ring, idx);
+    },
+    [hasInteractive, ringAtPoint]
+  );
+
+  const handleContainerMouseMove = useCallback(
+    (event: React.MouseEvent<HTMLDivElement>) => {
+      if (!hasInteractive) {
+        return;
+      }
+      const rect = event.currentTarget.getBoundingClientRect();
+      const idx = ringAtPoint(event.clientX, event.clientY, rect);
+      if (idx === hoveredIndexRef.current) {
+        return;
+      }
+      const prev = hoveredIndexRef.current;
+      if (prev !== null) {
+        const prevRing = ringsRef.current[prev];
+        prevRing.onHover?.(prevRing, prev, false);
+      }
+      setHoveredIndex(idx);
+      if (idx !== null) {
+        const newRing = ringsRef.current[idx];
+        newRing.onHover?.(newRing, idx, true);
+      }
+    },
+    [hasInteractive, ringAtPoint]
+  );
+
+  const handleContainerMouseLeave = useCallback(() => {
+    if (hoveredIndexRef.current === null) {
+      return;
+    }
+    const prev = hoveredIndexRef.current;
+    const prevRing = ringsRef.current[prev];
+    prevRing.onHover?.(prevRing, prev, false);
+    setHoveredIndex(null);
+  }, []);
+
+  // Cursor follows the hovered ring: pointer when its consumer wants clicks.
+  const containerCursor =
+    hoveredIndex !== null && rings[hoveredIndex]?.onClick ? 'pointer' : undefined;
+
   // Glow: resolve default blur
   const glowBlur = glow === true ? 6 : typeof glow === 'number' ? glow : 0;
 
@@ -305,12 +396,19 @@ export const RingsProgress = factory<RingsProgressFactory>((_props) => {
 
   const content = (
     <Box
-      {...getStyles('root', { style: { width: size, height: size } })}
+      {...getStyles('root', {
+        style: { width: size, height: size, cursor: containerCursor },
+      })}
       {...others}
       role={others.role ?? 'group'}
       aria-label={
         others['aria-label'] ?? (others['aria-labelledby'] ? undefined : 'Progress rings')
       }
+      onClick={hasInteractive ? handleContainerClick : others.onClick}
+      onMouseMove={hasInteractive ? handleContainerMouseMove : others.onMouseMove}
+      onMouseLeave={hasInteractive ? handleContainerMouseLeave : others.onMouseLeave}
+      data-interactive={hasInteractive || undefined}
+      data-hovered-ring={hoveredIndex ?? undefined}
     >
       {rings.map((ring, index) => {
         const {
@@ -320,6 +418,8 @@ export const RingsProgress = factory<RingsProgressFactory>((_props) => {
           glowIntensity,
           glowColor,
           rootColor: ringRootColor,
+          onClick: ringOnClick,
+          onHover: _ringOnHover,
           ...ringSection
         } = ring;
 
@@ -344,6 +444,20 @@ export const RingsProgress = factory<RingsProgressFactory>((_props) => {
 
         const isPulsing = pulseOnComplete && pulsingRings[index];
 
+        // Keyboard accessibility for rings with onClick: still expose role=button,
+        // tabIndex=0, and Enter/Space activation. The mouse path is handled by the
+        // container above via geometric hit-testing, but Tab navigation lands on
+        // each individual ring rectangle and Enter/Space then triggers onClick.
+        const interactive = Boolean(ringOnClick);
+        const handleKeyDown = ringOnClick
+          ? (event: React.KeyboardEvent<HTMLDivElement>) => {
+              if (event.key === 'Enter' || event.key === ' ') {
+                event.preventDefault();
+                ringOnClick(ring, index);
+              }
+            }
+          : undefined;
+
         return (
           <RingProgress
             key={index}
@@ -357,11 +471,13 @@ export const RingsProgress = factory<RingsProgressFactory>((_props) => {
             roundCaps={ringRoundCaps}
             transitionDuration={effectiveTransitionDuration}
             sections={[{ ...sectionWithoutTooltip, value: effectiveValue }]}
-            role="progressbar"
+            role={interactive ? 'button' : 'progressbar'}
             aria-valuenow={Math.round(ring.value)}
             aria-valuemin={0}
             aria-valuemax={100}
             aria-label={ringAriaLabel}
+            tabIndex={interactive ? 0 : undefined}
+            onKeyDown={handleKeyDown}
             styles={
               glowFilter || svgTransform
                 ? {

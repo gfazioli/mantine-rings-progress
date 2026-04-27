@@ -2,6 +2,7 @@ export { configurator } from './RingsProgress.demo.configurator';
 export { countdown } from './RingsProgress.demo.countdown';
 export { direction } from './RingsProgress.demo.direction';
 export { glow } from './RingsProgress.demo.glow';
+export { interactive } from './RingsProgress.demo.interactive';
 export { label } from './RingsProgress.demo.label';
 export { labels } from './RingsProgress.demo.labels';
 export { perring } from './RingsProgress.demo.perring';

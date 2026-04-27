@@ -18,13 +18,15 @@ function Wrapper(props: any) {
       <Center>
         <Box h={props.size} w={props.size} pos="relative">
           <RingsProgress key={key} rings={rings} {...props} />
-          <Group pos="absolute" bottom={-36} left={0} right={0} justify="center">
-            <Tooltip label="Replay animation">
-              <ActionIcon variant="subtle" size="sm" onClick={() => setKey((k) => k + 1)}>
-                <IconRefresh size={16} />
-              </ActionIcon>
-            </Tooltip>
-          </Group>
+          {props.animate && (
+            <Group pos="absolute" bottom={-36} left={0} right={0} justify="center">
+              <Tooltip label="Replay animation">
+                <ActionIcon variant="subtle" size="sm" onClick={() => setKey((k) => k + 1)}>
+                  <IconRefresh size={16} />
+                </ActionIcon>
+              </Tooltip>
+            </Group>
+          )}
         </Box>
       </Center>
     </Box>
