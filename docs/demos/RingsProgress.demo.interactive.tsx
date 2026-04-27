@@ -1,4 +1,4 @@
-import { RingsProgress } from '@gfazioli/mantine-rings-progress';
+import { RingsProgress, type RingsProgressRing } from '@gfazioli/mantine-rings-progress';
 import { Badge, Center, Stack, Text } from '@mantine/core';
 import { MantineDemo } from '@mantinex/demo';
 import { useState } from 'react';
@@ -13,38 +13,53 @@ function Wrapper() {
   const [hovered, setHovered] = useState<number | null>(null);
   const [selected, setSelected] = useState<number | null>(null);
 
-  const rings = ACTIVITIES.map((activity, index) => ({
+  // The ring that drives the centre label and the badge below.
+  const focused = hovered ?? selected;
+  const focusedActivity = focused !== null ? ACTIVITIES[focused] : null;
+
+  // Per-ring config: hover lights up the ring with a glow, others stay dim.
+  const rings: RingsProgressRing[] = ACTIVITIES.map((activity, index) => ({
     value: activity.value,
     color: activity.color,
-    onClick: () => setSelected(index),
-    onHover: (_ring: any, _i: number, isHovered: boolean) => setHovered(isHovered ? index : null),
+    glowIntensity: hovered === index ? 12 : 0,
+    onClick: () => setSelected((current) => (current === index ? null : index)),
+    onHover: (_ring, _i, isHovered) => setHovered(isHovered ? index : null),
   }));
-
-  const focused = selected ?? hovered;
-  const focusedActivity = focused !== null ? ACTIVITIES[focused] : null;
 
   return (
     <Stack align="center" gap="md">
-      <Center w="100%">
-        <RingsProgress size={180} rings={rings} animate />
+      <Center>
+        <RingsProgress
+          size={200}
+          thickness={14}
+          gap={8}
+          rings={rings}
+          animate
+          label={
+            focusedActivity ? (
+              <Stack gap={0} align="center">
+                <Text fw={700} c={focusedActivity.color}>
+                  {focusedActivity.value}%
+                </Text>
+                <Text size="xs" c="dimmed">
+                  {focusedActivity.name}
+                </Text>
+              </Stack>
+            ) : (
+              <Text size="xs" c="dimmed">
+                hover a ring
+              </Text>
+            )
+          }
+        />
       </Center>
-      {focusedActivity ? (
-        <Stack gap={4} align="center">
-          <Badge color={focusedActivity.color} size="lg">
-            {focusedActivity.name}
-          </Badge>
-          <Text size="sm" c="dimmed">
-            {focusedActivity.detail}
-          </Text>
-          {selected !== null && (
-            <Text size="xs" c="dimmed">
-              Click again to change selection
-            </Text>
-          )}
-        </Stack>
+      {selected !== null ? (
+        <Badge color={ACTIVITIES[selected].color} size="lg" variant="filled">
+          Selected: {ACTIVITIES[selected].name} — {ACTIVITIES[selected].detail}
+        </Badge>
       ) : (
         <Text size="sm" c="dimmed">
-          Hover or click a ring to inspect it
+          Click a ring to pin it; click again to unpin.
         </Text>
       )}
     </Stack>
@@ -52,7 +67,8 @@ function Wrapper() {
 }
 
 const code = `
-import { RingsProgress } from '@gfazioli/mantine-rings-progress';
+import { RingsProgress, type RingsProgressRing } from '@gfazioli/mantine-rings-progress';
+import { Badge, Center, Stack, Text } from '@mantine/core';
 import { useState } from 'react';
 
 const ACTIVITIES = [
@@ -64,20 +80,32 @@ const ACTIVITIES = [
 function Demo() {
   const [hovered, setHovered] = useState<number | null>(null);
   const [selected, setSelected] = useState<number | null>(null);
+  const focused = hovered ?? selected;
+  const focusedActivity = focused !== null ? ACTIVITIES[focused] : null;
 
-  const rings = ACTIVITIES.map((activity, index) => ({
+  const rings: RingsProgressRing[] = ACTIVITIES.map((activity, index) => ({
     value: activity.value,
     color: activity.color,
-    onClick: () => setSelected(index),
+    glowIntensity: hovered === index ? 12 : 0,
+    onClick: () => setSelected((current) => (current === index ? null : index)),
     onHover: (_ring, _i, isHovered) => setHovered(isHovered ? index : null),
   }));
 
-  const focused = selected ?? hovered;
-  const focusedActivity = focused !== null ? ACTIVITIES[focused] : null;
-
   return (
-    <RingsProgress size={180} rings={rings} />
-    /* Render \`focusedActivity\` somewhere in your UI */
+    <RingsProgress
+      size={200}
+      thickness={14}
+      gap={8}
+      rings={rings}
+      label={
+        focusedActivity ? (
+          <Stack gap={0} align="center">
+            <Text fw={700} c={focusedActivity.color}>{focusedActivity.value}%</Text>
+            <Text size="xs" c="dimmed">{focusedActivity.name}</Text>
+          </Stack>
+        ) : <Text size="xs" c="dimmed">hover a ring</Text>
+      }
+    />
   );
 }
 `;
