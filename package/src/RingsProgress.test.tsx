@@ -339,6 +339,11 @@ describe('RingsProgress', () => {
       expect(root.hasAttribute('data-interactive')).toBe(false);
     });
 
+    // For SIZE=200, thickness=12, gap=4:
+    // Ring 0 (outer): centerR = (200 * 0.9 - 24) / 2 = 78 → band [72, 84]
+    // Ring 1 (inner): ringSize = 200 - 32 = 168 → centerR = (168 * 0.9 - 24) / 2 = 63.6 → band [57.6, 69.6]
+    // Centre is at (100, 100).
+
     it('fires onClick on the ring under the cursor (geometric hit-test)', () => {
       const onClick = jest.fn();
       const rings = [
@@ -350,13 +355,12 @@ describe('RingsProgress', () => {
         { wrapper: TestWrapper }
       );
       const root = mockContainerRect(container);
-      // Click on the outer ring's stroke: x = 200 (right edge), y = 100 (centre).
-      // Centre is (100, 100), so r ≈ 100 — well inside the outer ring band.
-      fireEvent.click(root, { clientX: 196, clientY: 100 });
+      // Click on the outer ring stroke at r ≈ 78 from centre (100, 100).
+      fireEvent.click(root, { clientX: 178, clientY: 100 });
       expect(onClick).toHaveBeenCalledWith(rings[0], 0);
     });
 
-    it('does not fire onClick when the cursor is in the empty centre or outside any band', () => {
+    it('does not fire onClick when the cursor is outside any band', () => {
       const onClick = jest.fn();
       const { container } = render(
         <RingsProgress
@@ -368,8 +372,11 @@ describe('RingsProgress', () => {
         { wrapper: TestWrapper }
       );
       const root = mockContainerRect(container);
-      // Dead centre — far inside the inner empty area.
+      // Dead centre — r=0, outside any band.
       fireEvent.click(root, { clientX: 100, clientY: 100 });
+      expect(onClick).not.toHaveBeenCalled();
+      // Far edge of the rect — r ≈ 100, outside the outer band [72, 84].
+      fireEvent.click(root, { clientX: 200, clientY: 100 });
       expect(onClick).not.toHaveBeenCalled();
     });
 
@@ -386,10 +393,10 @@ describe('RingsProgress', () => {
       );
       const root = mockContainerRect(container);
 
-      // Enter the outer ring stroke.
-      fireEvent.mouseMove(root, { clientX: 196, clientY: 100 });
-      // Move to the inner ring stroke (smaller radius — outer thickness=12, gap=4).
+      // Enter the outer ring stroke at r ≈ 78.
       fireEvent.mouseMove(root, { clientX: 178, clientY: 100 });
+      // Move to the inner ring stroke at r ≈ 63.6.
+      fireEvent.mouseMove(root, { clientX: 163, clientY: 100 });
       // Leave the component entirely.
       fireEvent.mouseLeave(root);
 

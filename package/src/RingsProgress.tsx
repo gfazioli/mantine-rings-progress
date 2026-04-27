@@ -316,7 +316,10 @@ export const RingsProgress = factory<RingsProgressFactory>((_props) => {
       for (let i = 0; i < current.length; i++) {
         const t = current[i].thickness ?? thickness ?? 12;
         const ringSize = (size ?? 120) - offsets[i] * 2;
-        const centerR = (ringSize - t) / 2;
+        // Mantine RingProgress draws each circle at r = (size * 0.9 - thickness * 2) / 2
+        // (5% padding per side plus a thickness-wide inset). Match that exactly so the
+        // hit-test bands line up with the visible strokes.
+        const centerR = (ringSize * 0.9 - t * 2) / 2;
         if (Math.abs(r - centerR) <= t / 2) {
           return i;
         }
