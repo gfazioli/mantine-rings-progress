@@ -1,4 +1,3 @@
-import { useEffect, useState } from 'react';
 import { RingsProgress } from '@gfazioli/mantine-rings-progress';
 import {
   ActionIcon,
@@ -12,6 +11,7 @@ import {
   Text,
 } from '@mantine/core';
 import { MantineDemo } from '@mantinex/demo';
+import { useEffect, useState } from 'react';
 
 function Wrapper() {
   const [inputMinutes, setInputMinutes] = useState(10);

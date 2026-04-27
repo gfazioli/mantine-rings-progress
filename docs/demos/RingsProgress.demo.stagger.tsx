@@ -1,8 +1,8 @@
-import { useState } from 'react';
 import { RingsProgress } from '@gfazioli/mantine-rings-progress';
-import { IconRefresh } from '@tabler/icons-react';
 import { ActionIcon, Box, Stack, Tooltip } from '@mantine/core';
 import { MantineDemo } from '@mantinex/demo';
+import { IconRefresh } from '@tabler/icons-react';
+import { useState } from 'react';
 
 function Wrapper() {
   const [key, setKey] = useState(0);

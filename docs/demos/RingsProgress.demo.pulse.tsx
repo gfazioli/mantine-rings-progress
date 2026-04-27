@@ -1,7 +1,7 @@
-import { useState } from 'react';
 import { RingsProgress } from '@gfazioli/mantine-rings-progress';
 import { Box, Button, Center, Group, Slider, Stack, Text } from '@mantine/core';
 import { MantineDemo } from '@mantinex/demo';
+import { useState } from 'react';
 
 function Wrapper() {
   const [move, setMove] = useState(72);
