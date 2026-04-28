@@ -1,5 +1,5 @@
 import { RingsProgress, type RingsProgressRing } from '@gfazioli/mantine-rings-progress';
-import { Badge, Center, Stack, Text } from '@mantine/core';
+import { Badge, Box, Center, Stack, Text } from '@mantine/core';
 import { MantineDemo } from '@mantinex/demo';
 import { useState } from 'react';
 
@@ -27,48 +27,28 @@ function Wrapper() {
   }));
 
   return (
-    <Stack align="center" gap="md">
+    <Stack align="center" gap="md" pb="md">
+      <Text size="sm" c="dimmed" ta="center">
+        Hover a ring to inspect it · click to pin (click again to unpin)
+      </Text>
       <Center>
-        <RingsProgress
-          size={200}
-          thickness={14}
-          gap={8}
-          rings={rings}
-          animate
-          label={
-            focusedActivity ? (
-              <Stack gap={0} align="center">
-                <Text fw={700} c={focusedActivity.color}>
-                  {focusedActivity.value}%
-                </Text>
-                <Text size="xs" c="dimmed">
-                  {focusedActivity.name}
-                </Text>
-              </Stack>
-            ) : (
-              <Text size="xs" c="dimmed">
-                hover a ring
-              </Text>
-            )
-          }
-        />
+        <RingsProgress size={200} thickness={14} gap={8} rings={rings} animate />
       </Center>
-      {selected !== null ? (
-        <Badge color={ACTIVITIES[selected].color} size="lg" variant="filled">
-          Selected: {ACTIVITIES[selected].name} — {ACTIVITIES[selected].detail}
-        </Badge>
-      ) : (
-        <Text size="sm" c="dimmed">
-          Click a ring to pin it; click again to unpin.
-        </Text>
-      )}
+      {/* Reserved slot so the layout doesn't shift when the badge appears */}
+      <Box mih={36} style={{ display: 'flex', alignItems: 'center' }}>
+        {focusedActivity && (
+          <Badge color={focusedActivity.color} size="lg" variant="filled">
+            {focusedActivity.name} — {focusedActivity.value}% · {focusedActivity.detail}
+          </Badge>
+        )}
+      </Box>
     </Stack>
   );
 }
 
 const code = `
 import { RingsProgress, type RingsProgressRing } from '@gfazioli/mantine-rings-progress';
-import { Badge, Center, Stack, Text } from '@mantine/core';
+import { Badge, Box, Stack, Text } from '@mantine/core';
 import { useState } from 'react';
 
 const ACTIVITIES = [
@@ -92,20 +72,17 @@ function Demo() {
   }));
 
   return (
-    <RingsProgress
-      size={200}
-      thickness={14}
-      gap={8}
-      rings={rings}
-      label={
-        focusedActivity ? (
-          <Stack gap={0} align="center">
-            <Text fw={700} c={focusedActivity.color}>{focusedActivity.value}%</Text>
-            <Text size="xs" c="dimmed">{focusedActivity.name}</Text>
-          </Stack>
-        ) : <Text size="xs" c="dimmed">hover a ring</Text>
-      }
-    />
+    <Stack align="center" gap="md" pb="md">
+      <Text size="sm" c="dimmed">Hover a ring to inspect it · click to pin</Text>
+      <RingsProgress size={200} thickness={14} gap={8} rings={rings} />
+      <Box mih={36}>
+        {focusedActivity && (
+          <Badge color={focusedActivity.color} size="lg" variant="filled">
+            {focusedActivity.name} — {focusedActivity.value}% · {focusedActivity.detail}
+          </Badge>
+        )}
+      </Box>
+    </Stack>
   );
 }
 `;
