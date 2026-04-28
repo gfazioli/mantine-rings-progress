@@ -6,6 +6,8 @@ export const RingsProgressStylesApi: StylesApiData<RingsProgressFactory> = {
     root: 'Root element',
     ring: 'Ring element',
     label: 'Label element centered in the rings',
+    valueLabel:
+      'Value label positioned at the endpoint of a ring (when `showValues` or `showValue` is true)',
   },
 
   vars: {
