@@ -431,6 +431,132 @@ describe('RingsProgress', () => {
     });
   });
 
+  // Value labels per ring (#14)
+  describe('value labels (#14)', () => {
+    it('does not render value labels by default', () => {
+      const { container } = render(<RingsProgress rings={[{ value: 50, color: 'green' }]} />, {
+        wrapper: TestWrapper,
+      });
+      expect(container.querySelectorAll('[data-ring-index]')).toHaveLength(0);
+    });
+
+    it('renders one value label per ring when showValues is true', () => {
+      const { container } = render(
+        <RingsProgress
+          showValues
+          rings={[
+            { value: 25, color: 'green' },
+            { value: 75, color: 'blue' },
+          ]}
+        />,
+        { wrapper: TestWrapper }
+      );
+      const labels = container.querySelectorAll('[data-ring-index]');
+      expect(labels).toHaveLength(2);
+      expect(labels[0].getAttribute('data-ring-index')).toBe('0');
+      expect(labels[1].getAttribute('data-ring-index')).toBe('1');
+    });
+
+    it('formats values with the global formatValue prop', () => {
+      const { container } = render(
+        <RingsProgress
+          showValues
+          formatValue={(v) => `${v}/100`}
+          rings={[{ value: 42, color: 'green' }]}
+        />,
+        { wrapper: TestWrapper }
+      );
+      const label = container.querySelector('[data-ring-index]');
+      expect(label?.textContent).toBe('42/100');
+    });
+
+    it('per-ring formatValue overrides the global one', () => {
+      const { container } = render(
+        <RingsProgress
+          showValues
+          formatValue={(v) => `${v}/100`}
+          rings={[
+            { value: 50, color: 'green' },
+            { value: 80, color: 'blue', formatValue: (v) => `${v}!` },
+          ]}
+        />,
+        { wrapper: TestWrapper }
+      );
+      const labels = container.querySelectorAll('[data-ring-index]');
+      expect(labels[0].textContent).toBe('50/100');
+      expect(labels[1].textContent).toBe('80!');
+    });
+
+    it('per-ring showValue can selectively enable / disable labels', () => {
+      const { container } = render(
+        <RingsProgress
+          rings={[
+            { value: 50, color: 'green', showValue: true },
+            { value: 80, color: 'blue' },
+          ]}
+        />,
+        { wrapper: TestWrapper }
+      );
+      const labels = container.querySelectorAll('[data-ring-index]');
+      expect(labels).toHaveLength(1);
+      expect(labels[0].getAttribute('data-ring-index')).toBe('0');
+    });
+
+    function getXY(label: HTMLElement) {
+      return {
+        x: Math.round(parseFloat(label.style.left)),
+        y: Math.round(parseFloat(label.style.top)),
+      };
+    }
+
+    it("positions a 50% label at the bottom (12 o'clock + 180° clockwise)", () => {
+      const { container } = render(
+        <RingsProgress
+          size={200}
+          thickness={12}
+          showValues
+          rings={[{ value: 50, color: 'green' }]}
+        />,
+        { wrapper: TestWrapper }
+      );
+      const label = container.querySelector('[data-ring-index]') as HTMLElement;
+      // Ring 0: ringR = (200 * 0.9 - 24) / 2 = 78. Centre = 100.
+      // 50% clockwise from top → 6 o'clock → x=100, y=100+78=178.
+      expect(getXY(label)).toEqual({ x: 100, y: 178 });
+    });
+
+    it("positions a 25% label at 3 o'clock (90° clockwise from top)", () => {
+      const { container } = render(
+        <RingsProgress
+          size={200}
+          thickness={12}
+          showValues
+          rings={[{ value: 25, color: 'green' }]}
+        />,
+        { wrapper: TestWrapper }
+      );
+      const label = container.querySelector('[data-ring-index]') as HTMLElement;
+      // 25% → 90° → 3 o'clock → x=100+78=178, y=100.
+      expect(getXY(label)).toEqual({ x: 178, y: 100 });
+    });
+
+    it('flips the angle when direction is counterclockwise', () => {
+      const { container } = render(
+        <RingsProgress
+          size={200}
+          thickness={12}
+          direction="counterclockwise"
+          showValues
+          rings={[{ value: 25, color: 'green' }]}
+        />,
+        { wrapper: TestWrapper }
+      );
+      const label = container.querySelector('[data-ring-index]') as HTMLElement;
+      // 25% counterclockwise → -90° → 9 o'clock → x=100-78=22, y=100.
+      expect(getXY(label)).toEqual({ x: 22, y: 100 });
+    });
+  });
+
   // Animated value transitions (#20)
   describe('animateValueChanges (#20)', () => {
     function getRpDuration(container: HTMLElement) {

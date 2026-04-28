@@ -74,6 +74,27 @@ Use `startAngle` (in degrees) to change where rings start filling from — `0` i
 
 <Demo data={demos.direction} />
 
+## Value Labels
+
+Set `showValues` to render a label at the **endpoint of each ring's arc**. Each ring's position is computed from its own value, thickness, `startAngle`, and `direction`. Customise the displayed string with `formatValue` (global) or per-ring `formatValue`. Per-ring `showValue` lets you turn the label on or off for individual rings.
+
+```tsx
+<RingsProgress
+  showValues
+  formatValue={(v) => `${Math.round(v)}%`}
+  rings={[
+    { value: 75, color: 'red' },
+    { value: 50, color: 'green' },
+    // Per-ring override:
+    { value: 90, color: 'cyan', formatValue: (v) => `${v} / 100` },
+  ]}
+/>
+```
+
+Style the labels via the `valueLabel` Styles API selector — for example to add a background pill, or to change the font.
+
+<Demo data={demos.valueLabels} />
+
 ## Tooltip
 
 Set `withTooltip` to display a unified tooltip on hover showing all rings info. Each ring's `tooltip` prop defines the content — if omitted, the ring value percentage is shown. The tooltip displays a color swatch next to each entry. You can customize the tooltip with `tooltipProps`.

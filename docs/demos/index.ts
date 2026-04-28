@@ -10,3 +10,4 @@ export { perring } from './RingsProgress.demo.perring';
 export { pulse } from './RingsProgress.demo.pulse';
 export { stagger } from './RingsProgress.demo.stagger';
 export { tooltips } from './RingsProgress.demo.tooltips';
+export { valueLabels } from './RingsProgress.demo.valueLabels';

@@ -54,6 +54,12 @@ export interface RingsProgressRing {
   /** Accessible label for this ring, defaults to "Ring {index}: {value}%" */
   ariaLabel?: string;
 
+  /** Show a value label positioned at the endpoint of this ring's arc. Overrides the global `showValues`. */
+  showValue?: boolean;
+
+  /** Custom formatter for this ring's value label. Receives the numeric value, returns the displayed string. Falls back to the global `formatValue`. */
+  formatValue?: (value: number) => string;
+
   /** Called when the ring is clicked. The ring becomes keyboard-focusable (Enter/Space activates it) and the cursor switches to pointer. */
   onClick?: (ring: RingsProgressRing, index: number) => void;
 
@@ -61,7 +67,7 @@ export interface RingsProgressRing {
   onHover?: (ring: RingsProgressRing, index: number, hovered: boolean) => void;
 }
 
-export type RingsProgressStylesNames = 'root' | 'ring' | 'label';
+export type RingsProgressStylesNames = 'root' | 'ring' | 'label' | 'valueLabel';
 
 export type RingsProgressCssVariables = {
   root: '--rp-transition-duration';
@@ -127,6 +133,12 @@ export interface RingsProgressProps
 
   /** Show a unified tooltip with all rings info on hover, default: false */
   withTooltip?: boolean;
+
+  /** Show a value label at the endpoint of every ring's arc. Each ring can override with `showValue`. */
+  showValues?: boolean;
+
+  /** Default formatter for value labels. Each ring can override with its own `formatValue`. Defaults to `${Math.round(value)}%`. */
+  formatValue?: (value: number) => string;
 }
 
 export type RingsProgressFactory = Factory<{
@@ -143,6 +155,7 @@ const defaultProps: Partial<RingsProgressProps> = {
   animate: false,
   animateValueChanges: false,
   roundCaps: true,
+  showValues: false,
   transitionDuration: 0,
   rootColorAlpha: 0.15,
   staggerDelay: 0,
@@ -178,6 +191,8 @@ export const RingsProgress = factory<RingsProgressFactory>((_props) => {
     direction,
     onRingComplete,
     withTooltip,
+    showValues,
+    formatValue,
     classNames,
     styles,
     unstyled,
@@ -518,6 +533,43 @@ export const RingsProgress = factory<RingsProgressFactory>((_props) => {
           />
         );
       })}
+      {(showValues || rings.some((r) => r.showValue)) &&
+        rings.map((ring, index) => {
+          const shouldShow = ring.showValue ?? showValues;
+          if (!shouldShow) {
+            return null;
+          }
+          // Endpoint of this ring's arc, on its stroke centerline.
+          const ringT = ring.thickness ?? thickness ?? 12;
+          const ringSize = (size ?? 120) - offsets[index] * 2;
+          const ringR = (ringSize * 0.9 - ringT * 2) / 2;
+          const clampedValue = Math.max(0, Math.min(100, ring.value));
+          const directionMultiplier = direction === 'counterclockwise' ? -1 : 1;
+          const endAngleDeg = (startAngle ?? 0) + (clampedValue / 100) * 360 * directionMultiplier;
+          // 0° points at 12 o'clock; positive angles rotate clockwise.
+          const angleRad = (endAngleDeg * Math.PI) / 180;
+          const center = (size ?? 120) / 2;
+          const x = center + ringR * Math.sin(angleRad);
+          const y = center - ringR * Math.cos(angleRad);
+          const formatter = ring.formatValue ?? formatValue ?? ((v: number) => `${Math.round(v)}%`);
+          return (
+            <Box
+              key={`value-${index}`}
+              {...getStyles('valueLabel', {
+                style: {
+                  position: 'absolute',
+                  left: x,
+                  top: y,
+                  transform: 'translate(-50%, -50%)',
+                  pointerEvents: 'none',
+                },
+              })}
+              data-ring-index={index}
+            >
+              {formatter(ring.value)}
+            </Box>
+          );
+        })}
       {label && <Box {...getStyles('label')}>{label}</Box>}
     </Box>
   );
