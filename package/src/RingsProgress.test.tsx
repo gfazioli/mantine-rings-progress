@@ -557,6 +557,82 @@ describe('RingsProgress', () => {
     });
   });
 
+  // Per-ring linear gradients (#13)
+  describe('gradient rings (#13)', () => {
+    it('does not inject any <linearGradient> when no ring has a gradient', () => {
+      const { container } = render(
+        <RingsProgress
+          rings={[
+            { value: 50, color: 'green' },
+            { value: 80, color: 'blue' },
+          ]}
+        />,
+        { wrapper: TestWrapper }
+      );
+      expect(container.querySelectorAll('linearGradient')).toHaveLength(0);
+    });
+
+    it('creates a <linearGradient> with two stops for a ring with a gradient', () => {
+      const { container } = render(
+        <RingsProgress
+          rings={[{ value: 75, color: 'red', gradient: { from: 'red', to: 'orange', deg: 90 } }]}
+        />,
+        { wrapper: TestWrapper }
+      );
+      const grads = container.querySelectorAll('linearGradient');
+      expect(grads).toHaveLength(1);
+      const stops = grads[0].querySelectorAll('stop');
+      expect(stops).toHaveLength(2);
+      expect(stops[0].getAttribute('offset')).toBe('0%');
+      expect(stops[1].getAttribute('offset')).toBe('100%');
+    });
+
+    it('rewrites the foreground circle stroke to reference the gradient by id', () => {
+      const { container } = render(
+        <RingsProgress
+          rings={[{ value: 75, color: 'red', gradient: { from: 'red', to: 'orange' } }]}
+        />,
+        { wrapper: TestWrapper }
+      );
+      const grad = container.querySelector('linearGradient') as SVGLinearGradientElement;
+      const id = grad.getAttribute('id');
+      expect(id).toMatch(/^rp-grad-/);
+      const circles = container.querySelectorAll('circle');
+      expect(circles[1].getAttribute('stroke')).toBe(`url(#${id})`);
+    });
+
+    it('only injects gradients for rings that opt in', () => {
+      const { container } = render(
+        <RingsProgress
+          rings={[
+            { value: 50, color: 'green' }, // no gradient
+            { value: 80, color: 'blue', gradient: { from: 'blue', to: 'cyan' } },
+            { value: 30, color: 'red' }, // no gradient
+          ]}
+        />,
+        { wrapper: TestWrapper }
+      );
+      expect(container.querySelectorAll('linearGradient')).toHaveLength(1);
+    });
+
+    it('uses unique gradient ids per ring index', () => {
+      const { container } = render(
+        <RingsProgress
+          rings={[
+            { value: 50, color: 'red', gradient: { from: 'red', to: 'pink' } },
+            { value: 80, color: 'blue', gradient: { from: 'blue', to: 'cyan' } },
+          ]}
+        />,
+        { wrapper: TestWrapper }
+      );
+      const ids = Array.from(container.querySelectorAll('linearGradient')).map((g) =>
+        g.getAttribute('id')
+      );
+      expect(ids).toHaveLength(2);
+      expect(new Set(ids).size).toBe(2);
+    });
+  });
+
   // Animated value transitions (#20)
   describe('animateValueChanges (#20)', () => {
     function getRpDuration(container: HTMLElement) {
