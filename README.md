@@ -25,13 +25,17 @@ It requires **Mantine 9.x** and **React 19**.
 ### Features
 
 - **Per-ring customization** — Override `thickness`, `roundCaps`, and `rootColor` on individual rings
+- **Per-ring linear gradients** — Paint a ring's stroke with a two-stop gradient via `gradient: { from, to, deg? }`
+- **Per-ring value labels** — `showValues` (or per-ring `showValue`) drops a styled pill at the endpoint of each arc, with custom `formatValue`
+- **Per-ring interactions** — `onClick` and `onHover` callbacks with **geometric hit-testing**, so the right ring fires even when their wrappers overlap
 - **Entrance animation** — Animate rings from 0 to their target values on mount
 - **Staggered animation** — Animate rings one after another with configurable delay
+- **Animated value changes** — `animateValueChanges` interpolates value updates after mount (great for live dashboards)
 - **Glow / neon effect** — `drop-shadow` glow that follows the ring shape, with per-ring intensity and color
 - **Pulse on completion** — Subtle pulse animation when a ring reaches 100%, with `onRingComplete` callback
 - **Start angle & direction** — Customize where rings start filling and in which direction (clockwise/counterclockwise)
 - **Unified tooltip** — `withTooltip` shows a chart-like tooltip with color swatches for all rings
-- **Accessibility** — `role="progressbar"` with ARIA attributes on each ring, `prefers-reduced-motion` support
+- **Accessibility** — `role="progressbar"` with ARIA attributes on each ring, keyboard activation for clickable rings, `prefers-reduced-motion` support
 - **Central label** — Display any React node (text, emoji, component) centered in the rings
 
 > [!note]
