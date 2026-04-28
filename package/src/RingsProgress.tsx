@@ -93,6 +93,14 @@ export interface RingsProgressProps
   /** Enable entrance animation (mount from 0 to target), default: false */
   animate?: boolean;
 
+  /**
+   * Smoothly animate value changes after the entrance animation has completed.
+   * Reuses `transitionDuration` for the duration (or 500 ms when `transitionDuration`
+   * is 0). Respects `prefers-reduced-motion`.
+   * @default false
+   */
+  animateValueChanges?: boolean;
+
   /** Transition duration in ms for entrance animation and value changes, default: 0 */
   transitionDuration?: number;
 
@@ -133,6 +141,7 @@ const defaultProps: Partial<RingsProgressProps> = {
   thickness: 12,
   gap: 8,
   animate: false,
+  animateValueChanges: false,
   roundCaps: true,
   transitionDuration: 0,
   rootColorAlpha: 0.15,
@@ -158,6 +167,7 @@ export const RingsProgress = factory<RingsProgressFactory>((_props) => {
     rootColorAlpha,
     label,
     animate,
+    animateValueChanges,
     transitionDuration,
     roundCaps,
     staggerDelay,
@@ -281,13 +291,18 @@ export const RingsProgress = factory<RingsProgressFactory>((_props) => {
     });
   }, []);
 
-  // Effective transition duration
+  // Effective transition duration. Mantine's RingProgress already animates
+  // stroke-dashoffset/dasharray/stroke whenever its `--rp-transition-duration`
+  // is non-zero, so to animate value changes after mount we just keep a non-zero
+  // duration when `animateValueChanges` is on. `prefers-reduced-motion` always wins.
   const allMounted = mountedRings.every(Boolean);
   const effectiveTransitionDuration = reduceMotion
     ? 0
     : animate && !allMounted
       ? transitionDuration || 1000
-      : transitionDuration;
+      : animateValueChanges
+        ? transitionDuration || 500
+        : transitionDuration;
 
   // Compute cumulative offsets for per-ring thickness support
   const offsets: number[] = [];
