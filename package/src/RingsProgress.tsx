@@ -552,6 +552,9 @@ export const RingsProgress = factory<RingsProgressFactory>((_props) => {
           const x = center + ringR * Math.sin(angleRad);
           const y = center - ringR * Math.cos(angleRad);
           const formatter = ring.formatValue ?? formatValue ?? ((v: number) => `${Math.round(v)}%`);
+          // Default text colour: the ring's resolved colour, so each pill stays
+          // visually tied to its ring. Override via the valueLabel Styles API.
+          const labelColor = parseThemeColor({ color: ring.color, theme }).value;
           return (
             <Box
               key={`value-${index}`}
@@ -562,6 +565,7 @@ export const RingsProgress = factory<RingsProgressFactory>((_props) => {
                   top: y,
                   transform: 'translate(-50%, -50%)',
                   pointerEvents: 'none',
+                  color: labelColor,
                 },
               })}
               data-ring-index={index}
