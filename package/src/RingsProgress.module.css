@@ -11,6 +11,17 @@
   pointer-events: none;
 }
 
+.valueLabel {
+  background-color: var(--mantine-color-body);
+  border-radius: var(--mantine-radius-xl);
+  padding: rem(2px) rem(8px);
+  font-size: var(--mantine-font-size-xs);
+  font-weight: 600;
+  line-height: 1.2;
+  white-space: nowrap;
+  box-shadow: var(--mantine-shadow-xs);
+}
+
 .ring[data-pulsing] {
   animation: rings-pulse 600ms ease-in-out;
 }
