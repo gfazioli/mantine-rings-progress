@@ -587,7 +587,7 @@ describe('RingsProgress', () => {
       expect(stops[1].getAttribute('offset')).toBe('100%');
     });
 
-    it('rewrites the foreground circle stroke to reference the gradient by id', () => {
+    it('passes the gradient url through Mantine via the --curve-color CSS variable', () => {
       const { container } = render(
         <RingsProgress
           rings={[{ value: 75, color: 'red', gradient: { from: 'red', to: 'orange' } }]}
@@ -597,8 +597,11 @@ describe('RingsProgress', () => {
       const grad = container.querySelector('linearGradient') as SVGLinearGradientElement;
       const id = grad.getAttribute('id');
       expect(id).toMatch(/^rp-grad-/);
-      const circles = container.querySelectorAll('circle');
-      expect(circles[1].getAttribute('stroke')).toBe(`url(#${id})`);
+      // Mantine paints the stroke from `--curve-color`, set on the foreground circle's
+      // inline style.
+      const circles = Array.from(container.querySelectorAll<SVGCircleElement>('circle'));
+      const fg = circles.find((c) => c.style.getPropertyValue('--curve-color').includes('url('));
+      expect(fg?.style.getPropertyValue('--curve-color')).toBe(`url(#${id})`);
     });
 
     it('only injects gradients for rings that opt in', () => {

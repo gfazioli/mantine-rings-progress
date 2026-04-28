@@ -47,7 +47,6 @@ By default, `animate` only controls the **entrance** animation: rings mount from
 
 `animateValueChanges` keeps the transition active after mount so every subsequent value change interpolates smoothly — useful for live dashboards or "Apply changes" flows. The duration is taken from `transitionDuration`, or 500 ms when `transitionDuration` is the default 0. `prefers-reduced-motion` is respected automatically.
 
-> [!NOTE]
 > If you already pass an explicit `transitionDuration` greater than 0, value changes will animate with that duration even without `animateValueChanges` — Mantine's underlying `RingProgress` reads the same CSS variable. `animateValueChanges` is most useful when you want smooth value transitions without setting a custom duration.
 
 The demo below renders two `RingsProgress` side by side bound to the same state — both with `animate` for the entrance, but only the right one with `animateValueChanges`. Click "Randomize values" and watch the left snap while the right interpolates.
@@ -67,7 +66,6 @@ Each ring accepts a `gradient` prop (`{ from, to, deg? }`) that paints its strok
 />
 ```
 
-> [!NOTE]
 > Internally we inject a `<linearGradient>` into Mantine's `RingProgress` SVG and rewrite the foreground circle's `stroke` to reference it. If you remove the `gradient` prop the ring falls back to the solid `color` automatically. Multiple `RingsProgress` on the same page get unique gradient IDs so they never collide.
 
 <Demo data={demos.gradients} />
