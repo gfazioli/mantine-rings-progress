@@ -54,6 +54,24 @@ The demo below renders two `RingsProgress` side by side bound to the same state 
 
 <Demo data={demos.animatedValues} />
 
+## Gradient Rings
+
+Each ring accepts a `gradient` prop (`{ from, to, deg? }`) that paints its stroke with a two-stop linear gradient instead of a solid colour. `deg` follows the CSS convention (`0°` = bottom→top, `90°` = left→right, `180°` = top→bottom, default `0°`). When `gradient` is set, it overrides the ring's `color`.
+
+```tsx
+<RingsProgress
+  rings={[
+    { value: 80, color: 'red', gradient: { from: 'red', to: 'orange', deg: 45 } },
+    { value: 65, color: 'cyan', gradient: { from: 'indigo', to: 'cyan', deg: 90 } },
+  ]}
+/>
+```
+
+> [!NOTE]
+> Internally we inject a `<linearGradient>` into Mantine's `RingProgress` SVG and rewrite the foreground circle's `stroke` to reference it. If you remove the `gradient` prop the ring falls back to the solid `color` automatically. Multiple `RingsProgress` on the same page get unique gradient IDs so they never collide.
+
+<Demo data={demos.gradients} />
+
 ## Glow Effect
 
 Enable a neon-like glow behind rings with the `glow` prop. Set it to `true` for a default 6px glow, or pass a number for a custom blur radius. Each ring can override the glow with `glowIntensity` and `glowColor` props. Best visible on dark backgrounds.

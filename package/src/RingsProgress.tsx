@@ -20,7 +20,7 @@ import {
   type RingProgressProps,
   type TooltipFloatingProps,
 } from '@mantine/core';
-import { useReducedMotion } from '@mantine/hooks';
+import { useMergedRef, useReducedMotion } from '@mantine/hooks';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import classes from './RingsProgress.module.css';
 
@@ -53,6 +53,13 @@ export interface RingsProgressRing {
 
   /** Accessible label for this ring, defaults to "Ring {index}: {value}%" */
   ariaLabel?: string;
+
+  /**
+   * Two-stop linear gradient applied to this ring's stroke. Overrides `color`.
+   * `deg` follows the CSS convention (0° = bottom→top, 90° = left→right,
+   * 180° = top→bottom). Default 0°.
+   */
+  gradient?: { from: MantineColor; to: MantineColor; deg?: number };
 
   /** Show a value label positioned at the endpoint of this ring's arc. Overrides the global `showValues`. */
   showValue?: boolean;
@@ -210,6 +217,12 @@ export const RingsProgress = factory<RingsProgressFactory>((_props) => {
     vars,
   });
 
+  // Stable per-instance prefix for gradient element IDs. Generated once per mount;
+  // safe to embed in `id` attributes and `url(#...)` references.
+  const [instanceId] = useState(() => Math.random().toString(36).slice(2, 9));
+  const rootRef = useRef<HTMLDivElement>(null);
+  const mergedRef = useMergedRef(rootRef, (others as { ref?: React.Ref<HTMLDivElement> }).ref);
+
   // Mirror the rings array into a ref so effects can access the latest items without
   // listing the unstable `rings` reference in their dependency arrays. The ref is
   // refreshed on every render, which is cheap and side-effect-free.
@@ -297,6 +310,88 @@ export const RingsProgress = factory<RingsProgressFactory>((_props) => {
 
     prevValuesRef.current = currentValues;
   }, [ringValuesKey, pulseOnComplete, reduceMotion, onRingComplete]);
+
+  // Per-ring linear gradient injection. Mantine's RingProgress renders two SVG circles
+  // per ring (root track + foreground curve). When a ring has a `gradient` config, we
+  // create a <linearGradient> element inside its SVG's <defs> and rewrite the foreground
+  // circle's stroke to `url(#…)`. When the gradient is removed we delete the def and
+  // restore the original stroke colour. The ID is namespaced with a per-instance prefix
+  // so multiple RingsProgress on the same page don't collide.
+  const gradientSignature = rings
+    .map((r) => (r.gradient ? `${r.gradient.from}->${r.gradient.to}@${r.gradient.deg ?? 0}` : '-'))
+    .join('|');
+  const ringColorsSignature = rings.map((r) => r.color).join('|');
+  useEffect(() => {
+    const root = rootRef.current;
+    if (!root) {
+      return;
+    }
+    const wrappers = Array.from(
+      root.querySelectorAll<HTMLElement>(`[data-rp-instance="${instanceId}"]`)
+    );
+    wrappers.forEach((wrapper) => {
+      const idx = Number(wrapper.getAttribute('data-rp-ring-index'));
+      const ring = ringsRef.current[idx];
+      if (!ring) {
+        return;
+      }
+      const svg = wrapper.querySelector('svg');
+      if (!svg) {
+        return;
+      }
+      const gradientId = `rp-grad-${instanceId}-${idx}`;
+      const existing = svg.querySelector<SVGLinearGradientElement>(`#${gradientId}`);
+      const circles = svg.querySelectorAll<SVGCircleElement>('circle');
+      // Mantine renders the root track first and the foreground curve second.
+      const fg = circles[1] ?? circles[0];
+
+      if (ring.gradient) {
+        const fromColor = parseThemeColor({ color: ring.gradient.from, theme }).value;
+        const toColor = parseThemeColor({ color: ring.gradient.to, theme }).value;
+        // CSS gradient deg → SVG transform deg: SVG default flows L→R, CSS 0° flows
+        // bottom→top, so subtract 90° to align with the user's mental model.
+        const cssDeg = ring.gradient.deg ?? 0;
+        const svgDeg = cssDeg - 90;
+
+        let grad = existing;
+        if (!grad) {
+          let defs = svg.querySelector('defs');
+          if (!defs) {
+            defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
+            svg.insertBefore(defs, svg.firstChild);
+          }
+          grad = document.createElementNS(
+            'http://www.w3.org/2000/svg',
+            'linearGradient'
+          ) as SVGLinearGradientElement;
+          grad.setAttribute('id', gradientId);
+          grad.setAttribute('gradientUnits', 'objectBoundingBox');
+          const stop1 = document.createElementNS('http://www.w3.org/2000/svg', 'stop');
+          stop1.setAttribute('offset', '0%');
+          const stop2 = document.createElementNS('http://www.w3.org/2000/svg', 'stop');
+          stop2.setAttribute('offset', '100%');
+          grad.appendChild(stop1);
+          grad.appendChild(stop2);
+          defs.appendChild(grad);
+        }
+
+        (grad.children[0] as SVGStopElement).setAttribute('stop-color', fromColor);
+        (grad.children[1] as SVGStopElement).setAttribute('stop-color', toColor);
+        grad.setAttribute('gradientTransform', `rotate(${svgDeg}, 0.5, 0.5)`);
+
+        if (fg) {
+          fg.setAttribute('stroke', `url(#${gradientId})`);
+        }
+      } else if (existing) {
+        // Remove the gradient and let Mantine paint with the ring's solid colour again.
+        existing.remove();
+        if (fg) {
+          const solid = parseThemeColor({ color: ring.color, theme }).value;
+          fg.setAttribute('stroke', solid);
+        }
+      }
+    });
+  }, [gradientSignature, ringColorsSignature, instanceId, theme]);
 
   const handleAnimationEnd = useCallback((index: number) => {
     setPulsingRings((prev) => {
@@ -427,12 +522,16 @@ export const RingsProgress = factory<RingsProgressFactory>((_props) => {
       ? `rotate(${-90 + (startAngle ?? 0)}deg)${direction === 'counterclockwise' ? ' scaleX(-1)' : ''}`
       : undefined;
 
+  const { ref: _forwardedRef, ...othersWithoutRef } = others as typeof others & {
+    ref?: React.Ref<HTMLDivElement>;
+  };
   const content = (
     <Box
+      ref={mergedRef}
       {...getStyles('root', {
         style: { width: size, height: size, cursor: containerCursor },
       })}
-      {...others}
+      {...othersWithoutRef}
       role={others.role ?? 'group'}
       aria-label={
         others['aria-label'] ?? (others['aria-labelledby'] ? undefined : 'Progress rings')
@@ -453,6 +552,9 @@ export const RingsProgress = factory<RingsProgressFactory>((_props) => {
           rootColor: ringRootColor,
           onClick: ringOnClick,
           onHover: _ringOnHover,
+          showValue: _ringShowValue,
+          formatValue: _ringFormatValue,
+          gradient: _ringGradient,
           ...ringSection
         } = ring;
 
@@ -529,6 +631,8 @@ export const RingsProgress = factory<RingsProgressFactory>((_props) => {
               },
             })}
             data-pulsing={isPulsing || undefined}
+            data-rp-instance={instanceId}
+            data-rp-ring-index={index}
             onAnimationEnd={isPulsing ? () => handleAnimationEnd(index) : undefined}
           />
         );
