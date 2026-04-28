@@ -1,3 +1,4 @@
+export { animatedValues } from './RingsProgress.demo.animatedValues';
 export { configurator } from './RingsProgress.demo.configurator';
 export { countdown } from './RingsProgress.demo.countdown';
 export { direction } from './RingsProgress.demo.direction';

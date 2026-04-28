@@ -431,6 +431,45 @@ describe('RingsProgress', () => {
     });
   });
 
+  // Animated value transitions (#20)
+  describe('animateValueChanges (#20)', () => {
+    function getRpDuration(container: HTMLElement) {
+      const root = container.querySelector('[role="group"]') as HTMLElement;
+      const inner = root.querySelector('[style*="--rp-transition-duration"]') as HTMLElement | null;
+      return inner?.style.getPropertyValue('--rp-transition-duration');
+    }
+
+    it('does not apply a Mantine transition duration by default (CSS variable defaults to 0)', () => {
+      const { container } = render(<RingsProgress rings={[{ value: 50, color: 'green' }]} />, {
+        wrapper: TestWrapper,
+      });
+      // With transitionDuration=0 and animateValueChanges=false, Mantine RingProgress
+      // omits the inline --rp-transition-duration entirely, falling back to the CSS
+      // default of 0ms — value changes are instant.
+      expect(getRpDuration(container) || '0ms').toBe('0ms');
+    });
+
+    it('uses the provided transitionDuration when animateValueChanges is enabled', () => {
+      const { container } = render(
+        <RingsProgress
+          animateValueChanges
+          transitionDuration={750}
+          rings={[{ value: 50, color: 'green' }]}
+        />,
+        { wrapper: TestWrapper }
+      );
+      expect(getRpDuration(container)).toBe('750ms');
+    });
+
+    it('falls back to a 500 ms default when animateValueChanges is true but transitionDuration is 0', () => {
+      const { container } = render(
+        <RingsProgress animateValueChanges rings={[{ value: 50, color: 'green' }]} />,
+        { wrapper: TestWrapper }
+      );
+      expect(getRpDuration(container)).toBe('500ms');
+    });
+  });
+
   // Regression for #18: a parent re-render with an equivalent rings array
   // (same length, same values, new reference) must not fire onRingComplete again.
   it('does not re-fire onRingComplete when rings reference changes but values are unchanged', () => {

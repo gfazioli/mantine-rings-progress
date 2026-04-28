@@ -41,6 +41,12 @@ Use `staggerDelay` (in ms) to animate rings one after another instead of simulta
 
 <Demo data={demos.stagger} />
 
+### Animated value changes
+
+Set `animateValueChanges` to smoothly transition between ring values whenever the `value` prop changes after the entrance animation has completed — useful for live dashboards where data updates over time. The duration is taken from `transitionDuration` (or 500 ms when it's 0). Respects `prefers-reduced-motion` automatically.
+
+<Demo data={demos.animatedValues} />
+
 ## Glow Effect
 
 Enable a neon-like glow behind rings with the `glow` prop. Set it to `true` for a default 6px glow, or pass a number for a custom blur radius. Each ring can override the glow with `glowIntensity` and `glowColor` props. Best visible on dark backgrounds.
