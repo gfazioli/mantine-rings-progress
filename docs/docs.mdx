@@ -43,7 +43,14 @@ Use `staggerDelay` (in ms) to animate rings one after another instead of simulta
 
 ### Animated value changes
 
-Set `animateValueChanges` to smoothly transition between ring values whenever the `value` prop changes after the entrance animation has completed — useful for live dashboards where data updates over time. The duration is taken from `transitionDuration` (or 500 ms when it's 0). Respects `prefers-reduced-motion` automatically.
+By default, `animate` only controls the **entrance** animation: rings mount from 0 and reach their target once. After mount, the underlying transition duration drops back to 0 and any change to a ring's `value` **snaps** to the new state.
+
+`animateValueChanges` keeps the transition active after mount so every subsequent value change interpolates smoothly — useful for live dashboards or "Apply changes" flows. The duration is taken from `transitionDuration`, or 500 ms when `transitionDuration` is the default 0. `prefers-reduced-motion` is respected automatically.
+
+> [!NOTE]
+> If you already pass an explicit `transitionDuration` greater than 0, value changes will animate with that duration even without `animateValueChanges` — Mantine's underlying `RingProgress` reads the same CSS variable. `animateValueChanges` is most useful when you want smooth value transitions without setting a custom duration.
+
+The demo below renders two `RingsProgress` side by side bound to the same state — both with `animate` for the entrance, but only the right one with `animateValueChanges`. Click "Randomize values" and watch the left snap while the right interpolates.
 
 <Demo data={demos.animatedValues} />
 
