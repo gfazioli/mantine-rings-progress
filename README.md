@@ -107,6 +107,3 @@ Your help truly matters.
 
 ---
 https://github.com/user-attachments/assets/de494ff9-5e3c-4026-bdc3-0402110917e7
-
----
-[![Star History Chart](https://api.star-history.com/svg?repos=gfazioli/mantine-rings-progress&type=Timeline)](https://www.star-history.com/#gfazioli/mantine-rings-progress&Timeline)
